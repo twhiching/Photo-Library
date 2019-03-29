@@ -8,4 +8,6 @@ public class Album extends Photo{
 	}
 	private String albumName;
 	private String userConnect;
+	
+	
 }
