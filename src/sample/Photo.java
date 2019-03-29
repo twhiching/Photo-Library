@@ -4,12 +4,12 @@ package sample;
  * Name
  * Caption
  * 2 Tags
- * Date (??Just display date or do they want date and time)
+ * Date using DateTime Object (When it was last modified)
+ * Path to Photo(String)
 */
 import java.lang.String;
 import java.util.Calendar;
 import java.util.Date;
-import java.io.Serializable;
 
 public class Photo {
 
@@ -17,6 +17,7 @@ public class Photo {
 	private String caption;
 	private String tagOne;
 	private String tagTwo;
+	private String photoPath;
 	private String date;
 	
 	
@@ -63,13 +64,15 @@ public class Photo {
 	}
 	
 	/* Default Classes */
-	public Photo(String givenName) {
+	public Photo(String givenName, String givenPath) {
 		Calendar cal = Calendar.getInstance(); 
 		cal.set(Calendar.MILLISECOND,0);
 		name = givenName;
 		caption = null;
 		tagOne = null;
 		tagTwo = null;
+		photoPath = givenPath;
 		date = "00/00/0000";
+		
 	}
 }
