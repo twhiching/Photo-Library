@@ -18,6 +18,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.collections.FXCollections;
+import sample.Photo;
 import sample.users.Default;
 
 public class adminController implements Serializable {
@@ -77,7 +78,7 @@ public class adminController implements Serializable {
 		//Create the path for which the users folder will reside
         String dir = System.getProperty("user.dir");
         String PATH = dir+"/src/sample/users/";
-		String directoryName = PATH.concat(result.get());
+		String directoryName = PATH.concat(result.get().toLowerCase());
 
 		//TODO check to see if user name that admin inputed is unique!
 		File directory = new File(directoryName);
@@ -90,9 +91,30 @@ public class adminController implements Serializable {
                     System.out.println("directory was created successfully");
                     try{
             			//Set up the path for the .ser file
-            			directoryName = directoryName.concat("/"+result.get()+".ser");
+            			directoryName = directoryName.concat("/"+result.get().toLowerCase()+".ser");
             			String filename = directoryName;
             			Default user = new Default(result.get());
+            			//Add in the default photos for this account
+						String defaultPhotoPath = PATH.concat("/stockPhotos/bojack.jpg");
+						Photo defaultPhoto_1 = new Photo("bojack",defaultPhotoPath);
+						user.addPhoto(defaultPhoto_1);
+
+						defaultPhotoPath = PATH.concat("/stockPhotos/clippy.jpg");
+						Photo defaultPhoto_2 = new Photo("clippy",defaultPhotoPath);
+						user.addPhoto(defaultPhoto_2);
+
+						defaultPhotoPath = PATH.concat("/stockPhotos/discord.jpg");
+						Photo defaultPhoto_3 = new Photo("discord",defaultPhotoPath);
+						user.addPhoto(defaultPhoto_3);
+
+						defaultPhotoPath = PATH.concat("/stockPhotos/gitBlame.jpg");
+						Photo defaultPhoto_4 = new Photo("gitBlame",defaultPhotoPath);
+						user.addPhoto(defaultPhoto_4);
+
+						defaultPhotoPath = PATH.concat("/stockPhotos/houseMD.jpg");
+						Photo defaultPhoto_5 = new Photo("houseMD",defaultPhotoPath);
+						user.addPhoto(defaultPhoto_5);
+
             			//Saving of object in the .ser file
             			FileOutputStream file = new FileOutputStream(filename);
             			ObjectOutputStream out = new ObjectOutputStream(file);

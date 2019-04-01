@@ -67,8 +67,6 @@ public class Photo implements Serializable{
 	
 	/* Default Classes */
 	public Photo(String givenName, String givenPath) {
-		Calendar cal = Calendar.getInstance(); 
-		cal.set(Calendar.MILLISECOND,0);
 		name = givenName;
 		caption = null;
 		tagOne = null;

@@ -16,12 +16,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import sample.Album;
 
 public class userController {
 
-	Stage mainStage;
+
+
+	private String user;
 	
 	@FXML         
 	private Button logout;
@@ -34,11 +39,34 @@ public class userController {
 	
 	@FXML
 	private Button editPhoto;
+
+	@FXML
+	private ListView listView;
+
+	@FXML
+	private GridPane gridPane;
 	
 	
-	public void start(Stage stage) {   
-		mainStage = stage;
-		
+	public void initialize(String userName) {
+
+		//Load up all albums users may have and display them in the list view
+		//Load up all photo's user may have and display them in the grid view
+		//Select first photo in the list to be displayed in the photo's tab
+
+		//Deserialize the user object first
+		user = userName;
+		System.out.println("User name is:"+user);
+
+		//System.out.println("User is:" + user);
+		//Image image = new Image("File:image/myfile.jpg")
+		//gridpane.getChildren().add(new ImageView(image));
+
+
+	}
+
+	public void setUser(String userName){
+
+
 	}
 	
 	@FXML
