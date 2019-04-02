@@ -1,8 +1,7 @@
 package sample.view;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.LinkedList;
 import java.util.Optional;
 
 import javafx.event.ActionEvent;
@@ -19,10 +18,14 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import sample.Album;
+import sample.Photo;
+import sample.users.Default;
 
-public class userController {
+public class userController implements Serializable{
 
 
 
@@ -87,16 +90,63 @@ public class userController {
 		//Pop up dialog to get user name for the user object
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("Add New Album");
-		dialog.setHeaderText("Enter Albumn Name:");
-		dialog.setContentText("Albumn:");
+		dialog.setHeaderText("Enter Album Name:");
+		dialog.setContentText("Album:");
 		Optional<String> result = dialog.showAndWait();
+
+		Default userAlbum = null;
+		//No input validation to check for duplicate albums
+		//Deserialize User to get access to user functions
+		try {
+			String dir = System.getProperty("user.dir");
+	        String path = dir+"/src/sample/users/" + user + "/" + user + ".ser";
+			FileInputStream file = new FileInputStream(path);
+			ObjectInputStream in = new ObjectInputStream(file);
+			System.out.println("Deserializing user");
+			userAlbum = (Default)in.readObject();
+			System.out.println("Adding new album");
+			Album newAlbum = new Album(result.get());
+			//userAlbum.addAlbum(newAlbum);
+			System.out.println("Added album: " + result.get());
+			in.close();
+			file.close();
+			
+			//Reserialize again to save the new update
+			System.out.println("Reserializing object");
+			FileOutputStream fileOut = new FileOutputStream(path);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(userAlbum);
+			out.close();
+			fileOut.close();
+			System.out.println("Succesfully serialized object");
+			
+			
+			
+		}catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	public void addPhoto(ActionEvent evt) throws IOException {
+		//TODO add check to make sure that user is unique
+		//Pop up dialog to get user name for the user object
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("File Explorer");
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		fileChooser.getExtensionFilters().addAll(
+			    new FileChooser.ExtensionFilter("All Images", "*.*"),
+			    new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+			    new FileChooser.ExtensionFilter("GIF", "*.gif"),
+			    new FileChooser.ExtensionFilter("BMP", "*.bmp"),
+			    new FileChooser.ExtensionFilter("PNG", "*.png")
+			);
+		Window stage = null;
+		//After selecting a file it saves the true path in this variable
+		String photoPath = fileChooser.showOpenDialog(stage).toString();
+		System.out.println(photoPath);
 		
-		//Create the path for which the users folder will reside
-        String dir = System.getProperty("user.dir");
-        String PATH = dir+"/src/sample/users/";
-		String directoryName = PATH.concat(result.get());
-		
-		//TODO check to see if user name that admin inputed is unique!
-		File directory = new File(directoryName);
+		Default userAlbum = null;
+		//Below will be deserialization and serialization of object
 	}
 }
