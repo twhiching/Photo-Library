@@ -81,6 +81,7 @@ public class adminController implements Serializable {
 		String directoryName = PATH.concat(result.get().toLowerCase());
 
 		//TODO check to see if user name that admin inputed is unique!
+		//TODO change the input of the user to lower case and make sure it is saved in the system as a lower case
 		File directory = new File(directoryName);
 		// check if user have write permissions
         if(!directory.canWrite()) {
@@ -107,7 +108,7 @@ public class adminController implements Serializable {
 						Photo defaultPhoto_3 = new Photo("discord",defaultPhotoPath);
 						user.addPhoto(defaultPhoto_3);
 
-						defaultPhotoPath = PATH.concat("/stockPhotos/gitBlame.jpg");
+						defaultPhotoPath = PATH.concat("/stockPhotos/gitBlame.jpeg");
 						Photo defaultPhoto_4 = new Photo("gitBlame",defaultPhotoPath);
 						user.addPhoto(defaultPhoto_4);
 

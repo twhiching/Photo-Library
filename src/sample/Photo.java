@@ -46,6 +46,9 @@ public class Photo implements Serializable{
 	public String getDate() {
 		return this.date;
 	}
+	public String getPhotoPath() {
+		return photoPath;
+	}
 	
 	/* Setter Functions */
 	public void setName(String newName){
@@ -60,6 +63,9 @@ public class Photo implements Serializable{
 	public void setTagtwo(String newTag) {
 		this.tagTwo = newTag;
 	}
+	public void setPhotoPath(String photoPath) {
+		this.photoPath = photoPath;
+	}
 	//Just setting as string temporarily until I understand what date format is needed
 	public void setDate(String newDate) {
 		this.date = newDate;
@@ -71,7 +77,7 @@ public class Photo implements Serializable{
 		caption = null;
 		tagOne = null;
 		tagTwo = null;
-		photoPath = givenPath;
+		setPhotoPath(givenPath);
 		SimpleDateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy|HH:MM:SS");
 		File checkPhoto = new File(givenPath);
 		date = formatDate.format(checkPhoto.lastModified());
@@ -82,7 +88,7 @@ public class Photo implements Serializable{
 		caption = givenCaption;
 		tagOne = givenTagOne;
 		tagTwo = givenTagTwo;
-		photoPath = givenPath;
+		setPhotoPath(givenPath);
 		SimpleDateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy|HH:MM:SS");
 		File checkPhoto = new File(givenPath);
 		date = formatDate.format(checkPhoto.lastModified());
