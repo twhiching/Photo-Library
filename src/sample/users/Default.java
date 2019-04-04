@@ -14,6 +14,8 @@ public class Default implements Serializable {
 
     public Default(String name){
         userName = name;
+        albumList = new LinkedList<Album>();
+        photoList = new LinkedList<Photo>();
     }
 
     public String getUserName(){

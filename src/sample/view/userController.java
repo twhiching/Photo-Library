@@ -250,7 +250,7 @@ public class userController implements Serializable{
 			userAlbum = (Default)in.readObject();
 			System.out.println("Adding new album");
 			Album newAlbum = new Album(result.get());
-			//userAlbum.addAlbum(newAlbum);
+			userAlbum.addAlbum(newAlbum);
 			System.out.println("Added album: " + result.get());
 			in.close();
 			file.close();
@@ -263,8 +263,6 @@ public class userController implements Serializable{
 			out.close();
 			fileOut.close();
 			System.out.println("Succesfully serialized object");
-			
-			
 			
 		}catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -288,9 +286,40 @@ public class userController implements Serializable{
 		Window stage = null;
 		//After selecting a file it saves the true path in this variable
 		String photoPath = fileChooser.showOpenDialog(stage).toString();
-		System.out.println(photoPath);
+		//System.out.println(photoPath);
+		//Trying to extract just the file name below
+		File fileOne = new File(photoPath);
+		String photoNameraw = fileOne.getName();
+		//String extensionRegex = "\\.[a-z] {3,4}";
+		String photoNamecleaned = photoNameraw.substring(0, photoNameraw.lastIndexOf("."));
+		System.out.println(photoNamecleaned);
 		
 		Default userAlbum = null;
 		//Below will be deserialization and serialization of object
+		try {
+			String dir = System.getProperty("user.dir");
+	        String path = dir+"/src/sample/users/" + user + "/" + user + ".ser";
+			FileInputStream fileTwo = new FileInputStream(path);
+			ObjectInputStream in = new ObjectInputStream(fileTwo);
+			System.out.println("Deserializing user");
+			userAlbum = (Default)in.readObject();
+			System.out.println("Adding new album");
+			Photo userPhoto = new Photo(photoNamecleaned, photoNameraw);
+			userAlbum.addPhoto(userPhoto);
+			in.close();
+			fileTwo.close();
+			
+			//Reserialize again to save the new update
+			System.out.println("Reserializing object");
+			FileOutputStream fileOut = new FileOutputStream(path);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(userAlbum);
+			out.close();
+			fileOut.close();
+			System.out.println("Succesfully serialized object");
+		}catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }
