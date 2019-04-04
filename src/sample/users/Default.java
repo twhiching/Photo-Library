@@ -5,6 +5,7 @@ import sample.Photo;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.ArrayList;
 
 
 public class Default implements Serializable {
@@ -33,6 +34,13 @@ public class Default implements Serializable {
 
     public LinkedList<Photo> getPhotos(){
         return photoList;
+    }
+    public ArrayList<String> listAlbumnnames(){
+    	ArrayList<String> tempAlbum = new ArrayList<String>();
+    	for(int i = 0; i < albumList.size(); i++)
+    		tempAlbum.add(albumList.get(i).getName());
+    	
+    	return tempAlbum;
     }
 
     //Methods to add new albums and photos to the users lists

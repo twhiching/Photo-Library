@@ -21,7 +21,9 @@ public class Photo implements Serializable{
 	private String tagTwo;
 	private String photoPath;
 	private String date;
-	
+	//I am not sure about this but I think we need to make a list of the albumns a photo can be associated with
+	//Might not stay but just adding incase
+	private String[] connectedAlbums;
 	
 	/* Getter Functions */
 	public String getName(){
@@ -94,6 +96,7 @@ public class Photo implements Serializable{
 		date = formatDate.format(checkPhoto.lastModified());
 	}
 	
+	//These below may not be needed but we are holding onto it incase we need it for later use
 	//Serializing Photo
 	public boolean serializeFile(String photoName, Photo toSerialize) throws FileNotFoundException{
 		File serialPhoto = new File(photoName + ".ser");
