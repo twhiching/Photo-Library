@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.collections.FXCollections;
 import sample.Photo;
@@ -40,7 +41,22 @@ public class adminController implements Serializable {
 	private ObservableList<String> obsList;
 
 	//Start method loads up all users to the list view
-	public void initialize() {   
+	
+	public void start(Stage stage) {
+		mainStage = stage;
+		// TODO Auto-generated method stub
+		//Get current path of the user directory
+				String dir = System.getProperty("user.dir");
+		        String path = dir+"/src/sample/users/";
+		        File currentDir = new File(path);
+				//create an ObservableList from an ArrayList
+				ArrayList<String> listOfUsers = getUserNames(currentDir);
+				//Fill the observable list with the user names gathered from the file
+				obsList =  FXCollections.observableArrayList(listOfUsers);
+				listView.setItems(obsList);
+		
+	}
+	/*public void initialize() {   
 
 		//Get current path of the user directory
 		String dir = System.getProperty("user.dir");
@@ -51,17 +67,27 @@ public class adminController implements Serializable {
 		//Fill the observable list with the user names gathered from the file
 		obsList =  FXCollections.observableArrayList(listOfUsers);
 		listView.setItems(obsList);
-	}
+	}*/
 	
 	@FXML
 	public void logout(ActionEvent evt) throws IOException {
 		
 		//TODO add a pop up to confirm user choice of logging out
-		Parent loginView = FXMLLoader.load(getClass().getResource("/sample//view/loginPage.fxml"));
+		/*Parent loginView = FXMLLoader.load(getClass().getResource("/sample//view/loginPage.fxml"));
 		Scene scene = new Scene(loginView);
 		Stage window = (Stage) ((Node)evt.getSource()).getScene().getWindow();
 		window.setScene(scene);
-		window.show();	
+		window.show();	*/
+		FXMLLoader loader = new FXMLLoader();
+ 		loader.setLocation(getClass().getResource("/sample//view/loginPage.fxml"));	
+		AnchorPane root = (AnchorPane)loader.load();
+ 		
+ 		loginController Controller = loader.getController();
+ 		Controller.start(mainStage); 
+ 
+ 		mainStage.setScene(new Scene(root, 250, 125));
+ 		mainStage.setResizable(false);
+ 		mainStage.show();
 	}
 
 	@FXML
@@ -236,4 +262,6 @@ public class adminController implements Serializable {
 		obsList =  FXCollections.observableArrayList(listOfUsers);		
 		listView.setItems(obsList);
 	}
+
+	
 }

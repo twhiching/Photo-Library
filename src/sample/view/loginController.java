@@ -17,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import sample.view.userController;
 
@@ -55,11 +56,18 @@ public class loginController {
 								"/sample//view/adminPage.fxml"
 						)
 				);
-
-				Scene scene = new Scene(loader.load());
+				AnchorPane root = (AnchorPane)loader.load();
+				
+				/*Scene scene = new Scene(loader.load());
 				Stage window = (Stage) ((Node)evt.getSource()).getScene().getWindow();
 				window.setScene(scene);
-				window.show();
+				window.show();*/
+				
+				adminController Controller = loader.getController();
+				Controller.start(mainStage);
+				mainStage.setScene(new Scene(root, 300, 200));
+				mainStage.setResizable(false);
+				mainStage.show();
 			}else {
 				//Check if a specific user exists
 				String dir = System.getProperty("user.dir");
@@ -77,20 +85,34 @@ public class loginController {
 				if(userList.contains(userName.getText())) {
 					//adminView = FXMLLoader.load(getClass().getResource("/sample//view/userPage.fxml"));
 
-					FXMLLoader loader = new FXMLLoader(
+					/*FXMLLoader loader = new FXMLLoader(
 							getClass().getResource(
 									"/sample//view/userPage.fxml"
 							)
-					);
+					);*/
+					
+					FXMLLoader loader = new FXMLLoader();
+		     		loader.setLocation(getClass().getResource("/sample//view/userPage.fxml"));
+					AnchorPane root = (AnchorPane)loader.load();
 					System.out.println("Logging in as " + userName.getText());
-					Scene scene = new Scene(loader.load());
+					
+					userController Controller = loader.getController();
+					//Controller.setUserName(userName.getText());
+					Controller.start(mainStage,userName.getText());
+					if(root == null) {
+						System.out.println("Im null!");
+					}
+					mainStage.setScene(new Scene(root, 1000, 500));
+					mainStage.setResizable(false);
+					mainStage.show();
+					/*Scene scene = new Scene(loader.load());
 					Stage window = (Stage) ((Node)evt.getSource()).getScene().getWindow();
 					window.setScene(scene);
 
 					userController controller =
 							loader.<userController>getController();
 					controller.initialize(userName.getText());
-					window.show();
+					window.show();*/
 				}else {
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Error Dialog");

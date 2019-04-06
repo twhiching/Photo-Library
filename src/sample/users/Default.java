@@ -35,6 +35,11 @@ public class Default implements Serializable {
     public LinkedList<Photo> getPhotos(){
         return photoList;
     }
+    
+    public Photo getPhoto(int index){
+        return photoList.get(index);
+    }
+    
     public ArrayList<String> listAlbumnnames(){
     	ArrayList<String> tempAlbum = new ArrayList<String>();
     	for(int i = 0; i < albumList.size(); i++)

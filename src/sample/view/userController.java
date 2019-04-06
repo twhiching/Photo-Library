@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,19 +15,23 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import sample.Album;
 import sample.Photo;
 import sample.users.Default;
@@ -34,8 +39,13 @@ import sample.users.Default;
 public class userController implements Serializable{
 
 
+	Stage mainStage;
+	
+	private int index;
+	
+	private String userName;
 
-	private String user;
+	private Default user;
 	
 	@FXML         
 	private Button logout;
@@ -47,7 +57,10 @@ public class userController implements Serializable{
 	private Button addPhoto;
 	
 	@FXML
-	private Button editPhoto;
+	private Button edit;
+	
+	@FXML
+	private Button delete;
 
 	@FXML
 	private ListView listView;
@@ -64,16 +77,29 @@ public class userController implements Serializable{
 	@FXML
 	private Label photoName;
 	
-	/*@FXML
-	private TextArea captionArea;
+	@FXML
+	private Label thumbnailViewText;
 	
 	@FXML
-	private TextArea tag1Area;
+	private TextField nameArea;
 	
 	@FXML
-	private TextArea tag2Area;*/
+	private TextField captionArea;
 	
-	public void initialize(String userName) {
+	@FXML
+	private TextField tag1Area;
+	
+	@FXML
+	private TextField tag2Area;
+	
+	
+	public void setUserName(String name) {
+		userName = name;
+	}
+	
+	public void start(Stage primaryStage,String name) {
+		
+		mainStage = primaryStage;
 
 		//Load up all albums users may have and display them in the list view
 		//Load up all photo's user may have and display them in the grid view
@@ -81,20 +107,20 @@ public class userController implements Serializable{
 
 		
 		//Set user name
-		user = userName;
-		System.out.println("User name is:"+user);
+		userName = name;
+		System.out.println("User name is:"+userName);
 		
+		//Set label for thumbnail view
+		thumbnailViewText.setText(userName+"'s photos");
 		
 		//Create the path for where the users photos are stored
         String dir = System.getProperty("user.dir");
         String PATH = dir+"/src/sample/users/";
-		String directoryName = PATH.concat(user+"/"+user+".ser");
-		
+		String directoryName = PATH.concat(userName+"/"+userName+".ser");
 		System.out.println("Path to .ser file is:"+directoryName);
 		
-		
 		//Deserialize the user object first
-		Default user = null;
+		user = null;
 		
 		try{    
 	           // Reading the object from a file 
@@ -119,12 +145,21 @@ public class userController implements Serializable{
 	       }catch(ClassNotFoundException ex){ 
 	           System.out.println("ClassNotFoundException is caught"); 
 	       } 
-	     
-		//File folder = new File(directoryName);
-        //File[] listOfFiles = folder.listFiles();
-        
+		loadUserPhotos();
+		mainStage.setOnHiding( event -> {
+			try {
+				logout(null);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} );
+	}
+	
+	private void loadUserPhotos() {
+	     		        
+		tilePane.getChildren().clear();
         LinkedList<Photo> userPhotos = user.getPhotos();
-        
         
         for(int i=0; i < userPhotos.size(); i++){
         	FileInputStream input;
@@ -142,8 +177,8 @@ public class userController implements Serializable{
 	            		int xPos = (int) n.getLayoutX();
 	            		int yPos = (int) n.getLayoutY();	            		
 	            		int count = 0;
-	            		//System.out.println(xPos);
-	            		//System.out.println(yPos);
+	            		System.out.println(xPos);
+	            		System.out.println(yPos);
 	            		if(xPos == 15) {
 	            			xPos = 0;
 	            		}else {
@@ -156,7 +191,7 @@ public class userController implements Serializable{
 	            		
 	            		//System.out.println("x is:"+xPos);
 	            		//System.out.println("count is:"+count);
-	            		int index = xPos + (count*2);
+	            		index = xPos + (count*2);
 	            		//System.out.println("index is:"+index);
 	            		FileInputStream input;
 						try {
@@ -165,6 +200,10 @@ public class userController implements Serializable{
 							Image image = new Image(input);		            		
 		            		selectedPhoto.setImage(image);
 		            		photoName.setText(userPhotos.get(index).getName());
+		            		nameArea.setText(userPhotos.get(index).getName());
+		            		captionArea.setText(userPhotos.get(index).getCaption());
+		        			tag1Area.setText(userPhotos.get(index).getTagone());
+		        			tag2Area.setText(userPhotos.get(index).getTagtwo());
 		            		//System.out.println("Here is the name of the photo selected:"+userPhotos.get(index).getName());
 		            		
 						} catch (FileNotFoundException e) {
@@ -173,60 +212,66 @@ public class userController implements Serializable{
 						}	            		        	            	            		
 	            	}
 	            });
-	            tilePane.getChildren().addAll(imageView);
+	            tilePane.getChildren().addAll(imageView);	      
 	            
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        	
-        	//File file = new File(userPhotos.get(i).getPhotoPath());
-            //imageView = loadUserPhotos(file);
-            //if(imageView == null){
-            //	imageView = new ImageView();
-           // }
-            
+        	        	          
           } 
-             
-        /*for (final File file : listOfFiles) {
-                ImageView imageView;
-                imageView = loadUserPhotos(file);
-                if(imageView == null){
-                	imageView = new ImageView();
-                }
-                tilePane.getChildren().addAll(imageView);                            	
-        }*/
-
+               
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Horizontal
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Vertical scroll bar
-        scrollPane.setFitToWidth(true);
-        scrollPane.setContent(tilePane);
-        
-        //set listener for the items
-	   
-		
-	}
-	
-	private ImageView loadUserPhotos(final File imageFile) {
-		// DEFAULT_THUMBNAIL_WIDTH is a constant you need to define
-        // The last two arguments are: preserveRatio, and use smooth (slower)
-        // resizing
-		ImageView imageView = null;
-		
-        return imageView;	
+        //scrollPane.setFitToWidth(true);
+        scrollPane.setContent(tilePane);  
 	}
 
 	@FXML
 	public void logout(ActionEvent evt) throws IOException {
 		
-		//TODO add a pop up to confirm user choice of logging out
-		Parent loginView = FXMLLoader.load(getClass().getResource("/sample//view/loginPage.fxml"));
-		Scene scene = new Scene(loginView);
-		Stage window = (Stage) ((Node)evt.getSource()).getScene().getWindow();
-		window.setScene(scene);
-		window.show();
+		
+		//TODO add a dialog popup to confirm user choice of logging out
+		
+		//Serialized the user object before logging out
+		//Create the path for where the users photos are stored
+		System.out.println("Closing the stage");
+        String dir = System.getProperty("user.dir");
+        String PATH = dir+"/src/sample/users/";
+		String directoryName = PATH.concat(userName+"/"+userName+".ser");
+		System.out.println("Path to .ser file is:"+directoryName);
+		try
+        {    
+            //Saving of object in a file 
+            FileOutputStream file = new FileOutputStream(directoryName); 
+            ObjectOutputStream out = new ObjectOutputStream(file); 
+              
+            // Method for serialization of object 
+            out.writeObject(user); 
+              
+            out.close(); 
+            file.close(); 
+              
+            System.out.println("Object has been serialized"); 
+  
+        } 
+          
+        catch(IOException ex) 
+        { 
+            System.out.println("IOException is caught"); 
+        }
+		
+		FXMLLoader loader = new FXMLLoader();
+ 		loader.setLocation(getClass().getResource("/sample//view/loginPage.fxml"));	
+		AnchorPane root = (AnchorPane)loader.load();
+ 		
+ 		loginController Controller = loader.getController();
+ 		Controller.start(mainStage); 
+ 
+ 		mainStage.setScene(new Scene(root, 250, 125));
+ 		mainStage.setResizable(false);
+ 		mainStage.show();
 	}
-	
 	@FXML
 	public void addAlbum(ActionEvent evt) throws IOException{
 		
@@ -283,9 +328,26 @@ public class userController implements Serializable{
 			    new FileChooser.ExtensionFilter("BMP", "*.bmp"),
 			    new FileChooser.ExtensionFilter("PNG", "*.png")
 			);
+		
+		
 		Window stage = null;
+		//TODO Check to make sure user didn't back out and not select a photo
+		File selectedFile = fileChooser.showOpenDialog(mainStage);
 		//After selecting a file it saves the true path in this variable
-		String photoPath = fileChooser.showOpenDialog(stage).toString();
+		if(selectedFile != null ) {
+			String photoPath = selectedFile.toString();
+			File fileOne = new File(photoPath);
+			String photoNameraw = fileOne.getName();
+			String photoNamecleaned = photoNameraw.substring(0, photoNameraw.lastIndexOf("."));
+			System.out.println(photoNamecleaned);
+			System.out.println(photoNameraw);
+			System.out.println(photoPath);
+	        System.out.println("Adding new photo");
+			Photo userPhoto = new Photo(photoNamecleaned, photoPath);
+			user.addPhoto(userPhoto);
+			loadUserPhotos();
+		}
+		/*
 		//System.out.println(photoPath);
 		//Trying to extract just the file name below
 		File fileOne = new File(photoPath);
@@ -302,10 +364,10 @@ public class userController implements Serializable{
 			FileInputStream fileTwo = new FileInputStream(path);
 			ObjectInputStream in = new ObjectInputStream(fileTwo);
 			System.out.println("Deserializing user");
-			userAlbum = (Default)in.readObject();
-			System.out.println("Adding new album");
+			user = (Default)in.readObject();
+			System.out.println("Adding new photo");
 			Photo userPhoto = new Photo(photoNamecleaned, photoNameraw);
-			userAlbum.addPhoto(userPhoto);
+			user.addPhoto(userPhoto);
 			in.close();
 			fileTwo.close();
 			
@@ -319,6 +381,45 @@ public class userController implements Serializable{
 			System.out.println("Succesfully serialized object");
 		}catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
+		}*/
+		
+	}
+	
+	@FXML
+	public void edit(ActionEvent evt) {
+		//Can edit either an selected picture or album name
+		//First picture
+		System.out.println("I'm in edit!!!");
+		LinkedList<Photo> userPhotos = user.getPhotos();
+		Alert alert = new Alert(AlertType.CONFIRMATION, "Edit " + userPhotos.get(index).getName() + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+		alert.showAndWait();
+		if (alert.getResult() == ButtonType.YES) {
+			if(!(photoName.getText().equals(nameArea.getText()))){
+				photoName.setText((nameArea.getText()));
+			}
+			user.getPhoto(index).setName(nameArea.getText());
+			user.getPhoto(index).setCaption(captionArea.getText());
+			user.getPhoto(index).setTagone(tag1Area.getText());
+			user.getPhoto(index).setTagtwo(tag2Area.getText());
+		}
+	}
+	
+	@FXML
+	public void delete(ActionEvent evt) {
+		//Can delete either an selected picture or album
+		//First picture
+		LinkedList<Photo> userPhotos = user.getPhotos();
+		Alert alert = new Alert(AlertType.CONFIRMATION, "Delete " + userPhotos.get(index).getName() + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+		alert.showAndWait();
+
+		System.out.println(userPhotos.size());
+		if (alert.getResult() == ButtonType.YES) {
+			System.out.println("index is:"+index);
+			System.out.println("Selected photo to delete is:"+userPhotos.get(index).getName());
+			user.deletePhoto(userPhotos.get(index));
+			selectedPhoto.setImage(null);
+			photoName.setText(null);
+			loadUserPhotos();
 		}
 		
 	}
