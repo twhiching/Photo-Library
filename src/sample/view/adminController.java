@@ -38,7 +38,7 @@ public class adminController implements Serializable {
 	@FXML
 	private ListView<String> listView;
 
-	private ObservableList<String> obsList;
+	private ObservableList<String> obsListAdmin;
 
 	//Start method loads up all users to the list view
 	
@@ -52,8 +52,8 @@ public class adminController implements Serializable {
 				//create an ObservableList from an ArrayList
 				ArrayList<String> listOfUsers = getUserNames(currentDir);
 				//Fill the observable list with the user names gathered from the file
-				obsList =  FXCollections.observableArrayList(listOfUsers);
-				listView.setItems(obsList);
+				obsListAdmin =  FXCollections.observableArrayList(listOfUsers);
+				listView.setItems(obsListAdmin);
 		
 	}
 	/*public void initialize() {   
@@ -239,6 +239,7 @@ public class adminController implements Serializable {
 		return userNames;
 	}
 	
+	//I am not sure if this is deleting them as intended
 	public static void deleteFolder(File folder) {
 	    File[] files = folder.listFiles();
 	    if(files!=null) { //some JVMs return null for empty dirs
@@ -246,6 +247,7 @@ public class adminController implements Serializable {
 	            if(f.isDirectory()) {
 	                deleteFolder(f);
 	            } else {
+	            	System.out.println("File: " + f.getName());
 	                f.delete();
 	            }
 	        }
@@ -259,8 +261,8 @@ public class adminController implements Serializable {
         File currentDir = new File(path);
 		//create an ObservableList from an ArrayList
 		ArrayList<String> listOfUsers = getUserNames(currentDir);
-		obsList =  FXCollections.observableArrayList(listOfUsers);		
-		listView.setItems(obsList);
+		obsListAdmin =  FXCollections.observableArrayList(listOfUsers);		
+		listView.setItems(obsListAdmin);
 	}
 
 	

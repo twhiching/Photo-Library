@@ -3,7 +3,7 @@ package sample.view;
 import java.io.*;
 import java.util.*;
 
-import javafx.application.Platform;
+//mport javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,7 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
+//import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -19,7 +19,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+//import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
@@ -30,8 +30,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
+//import javafx.stage.Window;
+//import javafx.stage.WindowEvent;
 import sample.Album;
 import sample.Photo;
 import sample.users.Default;
@@ -392,6 +392,10 @@ public class userController implements Serializable{
 	
 	@FXML
 	public void delete(ActionEvent evt) {
+		/*
+		 * Problem is that it deletes a photo and album at the same time
+		 * */
+		
 		//Can delete either an selected picture or album
 		//First picture
 		LinkedList<Photo> userPhotos = user.getPhotos();
@@ -407,6 +411,40 @@ public class userController implements Serializable{
 			photoName.setText(null);
 			loadUserPhotos();
 		}
+		//Deleting album
+		String item = listView.getSelectionModel().getSelectedItem();
+	    int index = listView.getSelectionModel().getSelectedIndex();
+	    //Make sure an item is selected before being able to delete an entry
+	    if(item == null || index == -1) {    	
+	    	Alert deleteAlert = new Alert(AlertType.ERROR);
+	    	deleteAlert.setTitle("Error Dialog");
+	    	deleteAlert.setHeaderText("Must pick an album first");
+	    	deleteAlert.setContentText("An entry must be picked in order to delete a song from the library!");
+	    	deleteAlert.showAndWait();
+	    }else {	
+	    	Alert deleteAlert = new Alert(AlertType.CONFIRMATION, "Delete " + item + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+	    	deleteAlert.showAndWait();
+	    	//Delete selected item
+	    	if(deleteAlert.getResult() == ButtonType.YES) {
+	    		System.out.println("Deleting: " + item);
+			    user.deleteAlbumindex(index);	
+			    updateListView();
+	    	}			    	
+		    //Reset all text areas to blanks
+		    photoName.setText("");
+			nameArea.setText("");
+			captionArea.setText("");
+			tag1Area.setText("");
+			tag2Area.setText("");
+			listView.getSelectionModel().clearSelection();
+			index = index - 1;
+			if(!(index < 0)) {
+				listView.getSelectionModel().select(index);
+			}else {
+				listView.getSelectionModel().clearSelection();
+				listView.getSelectionModel().select(0);
+			}
+	    }		
 		
 	}
 	

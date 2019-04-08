@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.ArrayList;
 
 
+@SuppressWarnings("serial")
 public class Default implements Serializable {
     private String userName;
     private LinkedList<Album> albumList = new LinkedList<Album>();
@@ -61,6 +62,9 @@ public class Default implements Serializable {
     public void deleteAlbum(Album album){
         albumList.remove(album);
     }
+    public void deleteAlbumindex(int index) {
+    	albumList.remove(index);
+    }
 
     public void deletePhoto(Photo photo){
         photoList.remove(photo);
@@ -72,6 +76,5 @@ public class Default implements Serializable {
     			return false;
     	}
     	return true;
-    	
     }
 }
