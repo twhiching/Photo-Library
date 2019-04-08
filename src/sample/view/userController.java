@@ -1,11 +1,11 @@
 package sample.view;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -63,7 +63,7 @@ public class userController implements Serializable{
 	private Button delete;
 
 	@FXML
-	private ListView listView;
+	private ListView<String> listView;
 
 	@FXML
 	private ScrollPane scrollPane;
@@ -92,6 +92,8 @@ public class userController implements Serializable{
 	@FXML
 	private TextField tag2Area;
 	
+	private ObservableList<String> obsList;
+	
 	
 	public void setUserName(String name) {
 		userName = name;
@@ -105,7 +107,6 @@ public class userController implements Serializable{
 		//Load up all photo's user may have and display them in the grid view
 		//Select first photo in the list to be displayed in the photo's tab
 
-		
 		//Set user name
 		userName = name;
 		System.out.println("User name is:"+userName);
@@ -140,12 +141,14 @@ public class userController implements Serializable{
 	              System.out.println("Element at index "+i+": "+userPhotos.get(i).getPhotoPath());
 	            } 
 	         	          
-	       }catch(IOException ex){ 
+	       }catch(IOException | ClassNotFoundException ex){
+	    	   ex.printStackTrace();
 	           System.out.println("IOException is caught"); 
-	       }catch(ClassNotFoundException ex){ 
-	           System.out.println("ClassNotFoundException is caught"); 
-	       } 
+	       }
 		loadUserPhotos();
+		//ArrayList<String> albumList = new ArrayList<>();
+		obsList =  FXCollections.observableArrayList(user.listAlbumnnames());		
+		listView.setItems(obsList); 
 		mainStage.setOnHiding( event -> {
 			try {
 				logout(null);
@@ -282,35 +285,20 @@ public class userController implements Serializable{
 		dialog.setHeaderText("Enter Album Name:");
 		dialog.setContentText("Album:");
 		Optional<String> result = dialog.showAndWait();
-
-		Default userAlbum = null;
-		//No input validation to check for duplicate albums
-		//Deserialize User to get access to user functions
-		try {
-			String dir = System.getProperty("user.dir");
-	        String path = dir+"/src/sample/users/" + user + "/" + user + ".ser";
-			FileInputStream file = new FileInputStream(path);
-			ObjectInputStream in = new ObjectInputStream(file);
-			System.out.println("Deserializing user");
-			userAlbum = (Default)in.readObject();
+		//Album newAlbum = new Album(result.get());
+		//Rewrote logic since serialization was reworked
+		if(user.duplicateAlbumcheck(result.get())) {
 			System.out.println("Adding new album");
 			Album newAlbum = new Album(result.get());
-			userAlbum.addAlbum(newAlbum);
+			user.addAlbum(newAlbum);
 			System.out.println("Added album: " + result.get());
-			in.close();
-			file.close();
-			
-			//Reserialize again to save the new update
-			System.out.println("Reserializing object");
-			FileOutputStream fileOut = new FileOutputStream(path);
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(userAlbum);
-			out.close();
-			fileOut.close();
-			System.out.println("Succesfully serialized object");
-			
-		}catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
+			updateListView();
+		}else {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error Dialog");
+			alert.setHeaderText("Album with the name already exists");
+			alert.setContentText(result.get() + " already exists");
+			alert.showAndWait();
 		}
 	}
 	
@@ -329,8 +317,6 @@ public class userController implements Serializable{
 			    new FileChooser.ExtensionFilter("PNG", "*.png")
 			);
 		
-		
-		Window stage = null;
 		//TODO Check to make sure user didn't back out and not select a photo
 		File selectedFile = fileChooser.showOpenDialog(mainStage);
 		//After selecting a file it saves the true path in this variable
@@ -422,5 +408,13 @@ public class userController implements Serializable{
 			loadUserPhotos();
 		}
 		
+	}
+	
+	private void updateListView() {
+		//Simple function that updates list view for album names
+		ArrayList<String> albumList = new ArrayList<>();		
+		albumList = user.listAlbumnnames();	
+		obsList =  FXCollections.observableArrayList(albumList);		
+		listView.setItems(obsList);
 	}
 }

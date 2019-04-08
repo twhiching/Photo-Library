@@ -152,7 +152,7 @@ public class adminController implements Serializable {
             			file.close();
             			System.out.println("Object has been serialized");
             			//Update the listView
-            			updateListView();
+            			adminUpdatelistView();
             		}
             		catch (IOException e){
             			System.out.println("IOException is caught");
@@ -203,7 +203,7 @@ public class adminController implements Serializable {
 					continue;
 				}
 			}
-			updateListView();
+			adminUpdatelistView();
 	    }
 	}
 	
@@ -253,7 +253,7 @@ public class adminController implements Serializable {
 	    folder.delete();
 	}
 	
-	private void updateListView() {
+	private void adminUpdatelistView() {
 		String dir = System.getProperty("user.dir");
         String path = dir+"/src/sample/users/";
         File currentDir = new File(path);

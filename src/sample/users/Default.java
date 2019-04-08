@@ -65,4 +65,13 @@ public class Default implements Serializable {
     public void deletePhoto(Photo photo){
         photoList.remove(photo);
     }
+    public boolean duplicateAlbumcheck(String name) {
+    	//Basic input validation to make sure no duplicate albums can be created
+    	for(String i : listAlbumnnames()) {
+    		if(i.equals(name))
+    			return false;
+    	}
+    	return true;
+    	
+    }
 }
