@@ -247,7 +247,7 @@ public class adminController implements Serializable {
 	            if(f.isDirectory()) {
 	                deleteFolder(f);
 	            } else {
-	            	System.out.println("File: " + f.getName());
+	            	//System.out.println("File: " + f.getName());
 	                f.delete();
 	            }
 	        }

@@ -38,7 +38,6 @@ import sample.users.Default;
 
 public class userController implements Serializable{
 
-
 	Stage mainStage;
 	
 	private int index;
@@ -92,8 +91,10 @@ public class userController implements Serializable{
 	@FXML
 	private TextField tag2Area;
 	
-	private ObservableList<String> obsList;
+	@FXML
+	private TextField searchBox;
 	
+	private ObservableList<String> obsList;
 	
 	public void setUserName(String name) {
 		userName = name;
@@ -419,7 +420,7 @@ public class userController implements Serializable{
 	    	Alert deleteAlert = new Alert(AlertType.ERROR);
 	    	deleteAlert.setTitle("Error Dialog");
 	    	deleteAlert.setHeaderText("Must pick an album first");
-	    	deleteAlert.setContentText("An entry must be picked in order to delete a song from the library!");
+	    	deleteAlert.setContentText("An entry must be picked in order to delete a album");
 	    	deleteAlert.showAndWait();
 	    }else {	
 	    	Alert deleteAlert = new Alert(AlertType.CONFIRMATION, "Delete " + item + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
@@ -447,6 +448,7 @@ public class userController implements Serializable{
 	    }		
 		
 	}
+
 	
 	private void updateListView() {
 		//Simple function that updates list view for album names
