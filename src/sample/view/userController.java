@@ -147,7 +147,7 @@ public class userController implements Serializable{
 	           System.out.println("IOException is caught"); 
 	       }
 		loadUserPhotos();
-		obsList =  FXCollections.observableArrayList(user.listAlbumnnames());	
+		obsList =  FXCollections.observableArrayList(user.listAlbumnames());	
 		listView.setItems(obsList); 
 		moveBox.setItems(obsList);
 		copyBox.setItems(obsList);
@@ -307,33 +307,48 @@ public class userController implements Serializable{
 	@FXML
 	public void addPhoto(ActionEvent evt) throws IOException {
 		//TODO add check to make sure that user is unique
-		//Pop up dialog to get user name for the user object
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("File Explorer");
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-		fileChooser.getExtensionFilters().addAll(
-			    new FileChooser.ExtensionFilter("All Images", "*.*"),
-			    new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-			    new FileChooser.ExtensionFilter("GIF", "*.gif"),
-			    new FileChooser.ExtensionFilter("BMP", "*.bmp"),
-			    new FileChooser.ExtensionFilter("PNG", "*.png")
-			);
-		
-		//TODO Check to make sure user didn't back out and not select a photo
-		File selectedFile = fileChooser.showOpenDialog(mainStage);
-		//After selecting a file it saves the true path in this variable
-		if(selectedFile != null ) {
-			String photoPath = selectedFile.toString();
-			File fileOne = new File(photoPath);
-			String photoNameraw = fileOne.getName();
-			String photoNamecleaned = photoNameraw.substring(0, photoNameraw.lastIndexOf("."));
-			System.out.println(photoNamecleaned);
-			System.out.println(photoNameraw);
-			System.out.println(photoPath);
-	        System.out.println("Adding new photo");
-			Photo userPhoto = new Photo(photoNamecleaned, photoPath);
-			user.addPhoto(userPhoto);
-			loadUserPhotos();
+		//Make sure an album is selected
+		String selectedAlbum = listView.getSelectionModel().getSelectedItem();
+		if(selectedAlbum == null) {
+	    	Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error Dialog");
+			alert.setHeaderText("Invalid Album");
+			alert.setContentText("An album must be picked to add a photo");
+			alert.showAndWait();
+		}else {
+			System.out.println("Selected Album: " + selectedAlbum);
+			
+			//Pop up dialog to get user name for the user object
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("File Explorer");
+			fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+			fileChooser.getExtensionFilters().addAll(
+				    new FileChooser.ExtensionFilter("All Images", "*.*"),
+				    new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+				    new FileChooser.ExtensionFilter("GIF", "*.gif"),
+				    new FileChooser.ExtensionFilter("BMP", "*.bmp"),
+				    new FileChooser.ExtensionFilter("PNG", "*.png")
+				);
+			
+			//TODO Check to make sure user didn't back out and not select a photo
+			File selectedFile = fileChooser.showOpenDialog(mainStage);
+			//After selecting a file it saves the true path in this variable
+			if(selectedFile != null ) {
+				//Get information on selected Album
+				
+				String photoPath = selectedFile.toString();
+				File fileOne = new File(photoPath);
+				String photoNameraw = fileOne.getName();
+				String photoNamecleaned = photoNameraw.substring(0, photoNameraw.lastIndexOf("."));
+				System.out.println("Cleaned: " + photoNamecleaned);
+				System.out.println("Raw: " + photoNameraw);
+				System.out.println("Full Path: " +photoPath);
+		        System.out.println("Adding new photo");
+				Photo userPhoto = new Photo(photoNamecleaned, photoPath);
+				//user.addPhoto(userPhoto);
+				user.addAlbumphoto(selectedAlbum, userPhoto);
+				loadUserPhotos();
+			}
 		}
 	}
 	
@@ -434,7 +449,7 @@ public class userController implements Serializable{
 	private void updateListView() {
 		//Simple function that updates list view for album names
 		ArrayList<String> albumList = new ArrayList<>();		
-		albumList = user.listAlbumnnames();	
+		albumList = user.listAlbumnames();	
 		obsList =  FXCollections.observableArrayList(albumList);		
 		listView.setItems(obsList);
 		moveBox.setItems(obsList);

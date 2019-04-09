@@ -9,10 +9,10 @@ import java.io.Serializable;
 public class Album implements Serializable{
 	
 	private String name;
-	private LinkedList<Photo> albumName;
+	private LinkedList<Photo> photos;
 	
 	public LinkedList<Photo> getAlbumName() {
-		return albumName;
+		return photos;
 	}
 	
 	public void setName(String newName) {
@@ -21,15 +21,18 @@ public class Album implements Serializable{
 	public String getName() {
 		return this.name;
 	}	
+	public void addPhoto(Photo selectedPhoto) {
+		photos.add(selectedPhoto);
+	}
 	public ArrayList<String> listPhotonames(){
 		ArrayList<String> tempPhotos = new ArrayList<String>();
-		for(int i = 0; i < albumName.size(); i++)
-			tempPhotos.add(albumName.get(i).getName());
+		for(int i = 0; i < photos.size(); i++)
+			tempPhotos.add(photos.get(i).getName());
 		
 		return tempPhotos;
 	}
 	public Album(String name) {
 		this.name = name;
-		this.albumName = new LinkedList<Photo>();
+		this.photos = new LinkedList<Photo>();
 	}
 }
