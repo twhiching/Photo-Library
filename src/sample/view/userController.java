@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
@@ -62,6 +63,12 @@ public class userController implements Serializable{
 
 	@FXML
 	private ListView<String> listView;
+	
+	@FXML
+	private ComboBox<String> moveBox;
+	
+	@FXML
+	private ComboBox<String> copyBox;
 
 	@FXML
 	private ScrollPane scrollPane;
@@ -127,10 +134,8 @@ public class userController implements Serializable{
 	           // Reading the object from a file 
 	           FileInputStream file = new FileInputStream(directoryName); 
 	           ObjectInputStream in = new ObjectInputStream(file); 
-	              
 	           // Method for deserialization of object 
 	           user = (Default)in.readObject(); 
-	              
 	           in.close(); 
 	           file.close(); 
 	              
@@ -146,9 +151,10 @@ public class userController implements Serializable{
 	           System.out.println("IOException is caught"); 
 	       }
 		loadUserPhotos();
-		//ArrayList<String> albumList = new ArrayList<>();
-		obsList =  FXCollections.observableArrayList(user.listAlbumnnames());		
+		obsList =  FXCollections.observableArrayList(user.listAlbumnnames());	
 		listView.setItems(obsList); 
+		moveBox.setItems(obsList);
+		copyBox.setItems(obsList);
 		mainStage.setOnHiding( event -> {
 			try {
 				logout(null);
@@ -459,5 +465,7 @@ public class userController implements Serializable{
 		albumList = user.listAlbumnnames();	
 		obsList =  FXCollections.observableArrayList(albumList);		
 		listView.setItems(obsList);
+		moveBox.setItems(obsList);
+		copyBox.setItems(obsList);
 	}
 }
