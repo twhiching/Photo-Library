@@ -19,19 +19,18 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-//import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-//import javafx.stage.Window;
-//import javafx.stage.WindowEvent;
 import sample.Album;
 import sample.Photo;
 import sample.users.Default;
@@ -445,10 +444,14 @@ public class userController implements Serializable{
 				listView.getSelectionModel().clearSelection();
 				listView.getSelectionModel().select(0);
 			}
-	    }		
-		
+	    }			
 	}
-
+	
+	@FXML
+	public void onEnter(ActionEvent event) {
+		System.out.println("In the search box");
+		System.out.println("Searching: " + searchBox.getText());
+	}
 	
 	private void updateListView() {
 		//Simple function that updates list view for album names
