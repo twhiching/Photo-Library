@@ -110,10 +110,6 @@ public class userController implements Serializable{
 		
 		mainStage = primaryStage;
 
-		//Load up all albums users may have and display them in the list view
-		//Load up all photo's user may have and display them in the grid view
-		//Select first photo in the list to be displayed in the photo's tab
-
 		//Set user name
 		userName = name;
 		System.out.println("User name is:"+userName);
@@ -339,42 +335,6 @@ public class userController implements Serializable{
 			user.addPhoto(userPhoto);
 			loadUserPhotos();
 		}
-		/*
-		//System.out.println(photoPath);
-		//Trying to extract just the file name below
-		File fileOne = new File(photoPath);
-		String photoNameraw = fileOne.getName();
-		//String extensionRegex = "\\.[a-z] {3,4}";
-		String photoNamecleaned = photoNameraw.substring(0, photoNameraw.lastIndexOf("."));
-		System.out.println(photoNamecleaned);
-		
-		Default userAlbum = null;
-		//Below will be deserialization and serialization of object
-		try {
-			String dir = System.getProperty("user.dir");
-	        String path = dir+"/src/sample/users/" + user + "/" + user + ".ser";
-			FileInputStream fileTwo = new FileInputStream(path);
-			ObjectInputStream in = new ObjectInputStream(fileTwo);
-			System.out.println("Deserializing user");
-			user = (Default)in.readObject();
-			System.out.println("Adding new photo");
-			Photo userPhoto = new Photo(photoNamecleaned, photoNameraw);
-			user.addPhoto(userPhoto);
-			in.close();
-			fileTwo.close();
-			
-			//Reserialize again to save the new update
-			System.out.println("Reserializing object");
-			FileOutputStream fileOut = new FileOutputStream(path);
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(userAlbum);
-			out.close();
-			fileOut.close();
-			System.out.println("Succesfully serialized object");
-		}catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}*/
-		
 	}
 	
 	@FXML
@@ -457,6 +417,18 @@ public class userController implements Serializable{
 	public void onEnter(ActionEvent event) {
 		System.out.println("In the search box");
 		System.out.println("Searching: " + searchBox.getText());
+	}
+	
+	@FXML
+	public void movePhoto(ActionEvent event) {
+		String selectedAlbum = moveBox.getSelectionModel().getSelectedItem().toString();
+		System.out.println("Move Selected: " + selectedAlbum);
+	}
+	
+	@FXML
+	public void copyPhoto(ActionEvent event) {
+		String selectedPhoto = copyBox.getSelectionModel().getSelectedItem().toString();
+		System.out.println("Copy Selected: " + selectedPhoto);
 	}
 	
 	private void updateListView() {
