@@ -32,6 +32,10 @@ public class Default implements Serializable {
     public LinkedList<Album> getAlbums(){
         return albumList;
     }
+    
+    public Album getAlbum(int index){
+        return albumList.get(index);
+    }
 
     public LinkedList<Photo> getPhotos(){
         return photoList;
@@ -73,8 +77,8 @@ public class Default implements Serializable {
     //Targeted function to add photo given the name of the album
     public void addAlbumphoto(String albumName, Photo selectedPhoto) {
    	 	int albumIndex = findAlbum(albumName);
-   	 	if(albumIndex != -1) {
-   	 		albumList.get(albumIndex).addPhoto(selectedPhoto);
+   	 	if(albumIndex != -1) {   	 	   
+   	 		albumList.get(albumIndex).addPhoto(selectedPhoto); 	 		
    	 	}
     }
 

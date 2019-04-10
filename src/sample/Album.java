@@ -3,7 +3,6 @@ package sample;
 import sample.Photo;
 import java.util.LinkedList;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.io.Serializable;
 
 public class Album implements Serializable{
@@ -11,8 +10,16 @@ public class Album implements Serializable{
 	private String name;
 	private LinkedList<Photo> photos;
 	
-	public LinkedList<Photo> getAlbumName() {
+	public LinkedList<Photo> getAlbumPhotos() {
 		return photos;
+	}
+	
+	public void deletePhoto(Photo photo) {
+		photos.remove(photo);
+	}
+	
+	public Photo getPhoto(int index) {
+		return photos.get(index);
 	}
 	
 	public void setName(String newName) {
