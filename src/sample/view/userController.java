@@ -1,6 +1,8 @@
 package sample.view;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javafx.collections.FXCollections;
@@ -479,13 +481,29 @@ public class userController implements Serializable{
 	public void onEnter(ActionEvent event) {
 		System.out.println("In the search box");
 		System.out.println("Searching: " + searchBox.getText());
+		String toSearch = searchBox.getText();
+		/*
 		if(searchBox.getText().equals("all photos")) {
 			LinkedList<Photo> userPhotos = user.getPhotos();
 			loadUserPhotos(userPhotos);
 		}
-		
+		*/
+		//Triple check if value contains boolean statement, date, else false
+		if(toSearch.matches("AND|OR")) {
+			System.out.println("This search result contains a boolean result");
+		}
+		//Date range (MM/dd/yyyy-MM/dd/yyyy)
+		else if(toSearch.length() == 21) {
+			System.out.println("This is a time period result");
+			
+			//Converting string to date format
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+			//Some function to grade all photos date below
+		}else
+			System.out.println("Invalid Search Query");
 		listView.getSelectionModel().clearSelection();
 		searchBox.setText("");
+		
 	}
 	
 	@FXML

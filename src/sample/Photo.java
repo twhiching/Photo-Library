@@ -8,6 +8,7 @@ package sample;
  * Path to Photo(String)
 */
 import java.lang.String;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.io.*;
@@ -21,9 +22,9 @@ public class Photo implements Serializable{
 	private String tagTwo;
 	private String photoPath;
 	private String date;
-	//I am not sure about this but I think we need to make a list of the albumns a photo can be associated with
+	//I am not sure about this but I think we need to make a list of the albums a photo can be associated with
 	//Might not stay but just adding incase
-	private String[] connectedAlbums;
+	private ArrayList<String> connectedAlbums;
 	
 	/* Getter Functions */
 	public String getName(){
@@ -80,7 +81,7 @@ public class Photo implements Serializable{
 		tagOne = null;
 		tagTwo = null;
 		setPhotoPath(givenPath);
-		SimpleDateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy|HH:MM:SS");
+		SimpleDateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy");
 		File checkPhoto = new File(givenPath);
 		date = formatDate.format(checkPhoto.lastModified());
 	}
@@ -91,7 +92,7 @@ public class Photo implements Serializable{
 		tagOne = givenTagOne;
 		tagTwo = givenTagTwo;
 		setPhotoPath(givenPath);
-		SimpleDateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy|HH:MM:SS");
+		SimpleDateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy");
 		File checkPhoto = new File(givenPath);
 		date = formatDate.format(checkPhoto.lastModified());
 	}

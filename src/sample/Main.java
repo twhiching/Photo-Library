@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import sample.view.loginController;
+import sample.users.Admin;
 
 public class Main extends Application {
 	
@@ -34,6 +35,7 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+    	Admin.stockExist();
         launch(args);
     }
 }

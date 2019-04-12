@@ -41,7 +41,6 @@ public class adminController implements Serializable {
 	private ObservableList<String> obsListAdmin;
 
 	//Start method loads up all users to the list view
-	
 	public void start(Stage stage) {
 		mainStage = stage;
 		// TODO Auto-generated method stub
@@ -56,18 +55,6 @@ public class adminController implements Serializable {
 				listView.setItems(obsListAdmin);
 		
 	}
-	/*public void initialize() {   
-
-		//Get current path of the user directory
-		String dir = System.getProperty("user.dir");
-        String path = dir+"/src/sample/users/";
-        File currentDir = new File(path);
-		//create an ObservableList from an ArrayList
-		ArrayList<String> listOfUsers = getUserNames(currentDir);
-		//Fill the observable list with the user names gathered from the file
-		obsList =  FXCollections.observableArrayList(listOfUsers);
-		listView.setItems(obsList);
-	}*/
 	
 	@FXML
 	public void logout(ActionEvent evt) throws IOException {
@@ -116,6 +103,7 @@ public class adminController implements Serializable {
                 boolean successful = directory.mkdirs();
                 if (successful){
                     System.out.println("directory was created successfully");
+                    /* We don't need stock photos for new user
                     try{
             			//Set up the path for the .ser file
             			directoryName = directoryName.concat("/"+result.get().toLowerCase()+".ser");
@@ -158,7 +146,7 @@ public class adminController implements Serializable {
             			System.out.println("IOException is caught");
             			e.printStackTrace();
             			System.exit(-1);
-            		}
+            		}*/
                 }else{
                     System.out.println("directory was not created");
                 }
