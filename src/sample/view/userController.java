@@ -352,6 +352,9 @@ public class userController implements Serializable{
 				System.out.println("Full Path: " +photoPath);
 		        System.out.println("Adding new photo");
 				Photo userPhoto = new Photo(photoNamecleaned, photoPath);
+				//Breaks when adding photo here
+				System.out.println("UserController before photo is added: " + selectedAlbum);
+				userPhoto.addAlbumname(selectedAlbum);
 				user.addAlbumphoto(selectedAlbum, userPhoto);
 				LinkedList<Photo> Photos = user.getAlbum(user.findAlbum(selectedAlbum)).getAlbumPhotos();
 				loadUserPhotos(Photos);
@@ -371,6 +374,8 @@ public class userController implements Serializable{
 				if(!(photoName.getText().equals(nameArea.getText()))){
 					photoName.setText((nameArea.getText()));
 				}
+				//Search through all albums for that photo and make the change if photo matches
+				
 				user.getAlbum(user.findAlbum(album)).getPhoto(index).setName(nameArea.getText());
 				user.getAlbum(user.findAlbum(album)).getPhoto(index).setCaption(captionArea.getText());
 				user.getAlbum(user.findAlbum(album)).getPhoto(index).setTagone(tag1Area.getText());
@@ -515,6 +520,11 @@ public class userController implements Serializable{
 		System.out.println("Move Selected: " + destinationAlbum);		
 		user.addAlbumphoto(destinationAlbum, photoSelected);
 		user.getAlbum(user.findAlbum(sourceAlbum)).deletePhoto(photoSelected);
+		photoSelected.addAlbumname(destinationAlbum);
+		//***************************New method to change arrayList in photo variable**********************************************//
+		int targetAlbumindex = user.findAlbum(sourceAlbum);
+		user.getAlbum(user.findAlbum(sourceAlbum)).getPhoto(index).deleteSelectedalbum(targetAlbumindex);
+		//*****************************************************//
 		selectedPhoto.setImage(null);
 		photoName.setText(null);
 		LinkedList<Photo> updatedPhotos = user.getAlbum(user.findAlbum(sourceAlbum)).getAlbumPhotos();
@@ -534,11 +544,14 @@ public class userController implements Serializable{
 		String selectedAlbum = copyBox.getSelectionModel().getSelectedItem().toString();
 		//int index = copyBox.getSelectionModel().getSelectedIndex();
 		System.out.println("Copy Selected: " + selectedAlbum);
+		photoSelected.addAlbumname(selectedAlbum);
+		System.out.println("Using Photo class successfully copied over");
 		user.addAlbumphoto(selectedAlbum, photoSelected);
+		System.out.println("In the user class adding album photo");
 		try {
 			copyBox.getSelectionModel().clearSelection();
 		}catch(Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		
 	}

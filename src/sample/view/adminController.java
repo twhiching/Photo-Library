@@ -103,12 +103,13 @@ public class adminController implements Serializable {
                 boolean successful = directory.mkdirs();
                 if (successful){
                     System.out.println("directory was created successfully");
-                    /* We don't need stock photos for new user
                     try{
             			//Set up the path for the .ser file
             			directoryName = directoryName.concat("/"+result.get().toLowerCase()+".ser");
             			String filename = directoryName;
             			Default user = new Default(result.get());
+            			
+            			/* We don't need stock photos for new user
             			//Add in the default photos for this account
 						String defaultPhotoPath = PATH.concat("/stockPhotos/bojack.jpg");
 						Photo defaultPhoto_1 = new Photo("bojack",defaultPhotoPath);
@@ -129,11 +130,11 @@ public class adminController implements Serializable {
 						defaultPhotoPath = PATH.concat("/stockPhotos/houseMD.jpg");
 						Photo defaultPhoto_5 = new Photo("houseMD",defaultPhotoPath);
 						user.addPhoto(defaultPhoto_5);
+						******************************/
 
             			//Saving of object in the .ser file
             			FileOutputStream file = new FileOutputStream(filename);
             			ObjectOutputStream out = new ObjectOutputStream(file);
-
             			// Method for serialization of object
             			out.writeObject(user);
             			out.close();
@@ -146,7 +147,7 @@ public class adminController implements Serializable {
             			System.out.println("IOException is caught");
             			e.printStackTrace();
             			System.exit(-1);
-            		}*/
+            		}
                 }else{
                     System.out.println("directory was not created");
                 }

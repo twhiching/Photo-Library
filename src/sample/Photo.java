@@ -52,6 +52,9 @@ public class Photo implements Serializable{
 	public String getPhotoPath() {
 		return photoPath;
 	}
+	public ArrayList<String> getconnectedAlbums() {
+		return connectedAlbums;
+	}
 	
 	/* Setter Functions */
 	public void setName(String newName){
@@ -69,9 +72,11 @@ public class Photo implements Serializable{
 	public void setPhotoPath(String photoPath) {
 		this.photoPath = photoPath;
 	}
-	//Just setting as string temporarily until I understand what date format is needed
 	public void setDate(String newDate) {
 		this.date = newDate;
+	}
+	public void setConnectedalbums(ArrayList<String> setAlbum) {
+		this.connectedAlbums = setAlbum;
 	}
 	
 	/* Default Classes */
@@ -84,6 +89,7 @@ public class Photo implements Serializable{
 		SimpleDateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy");
 		File checkPhoto = new File(givenPath);
 		date = formatDate.format(checkPhoto.lastModified());
+		connectedAlbums = new ArrayList<String>();
 	}
 	
 	public Photo(String givenName, String givenPath, String givenCaption, String givenTagOne, String givenTagTwo) {
@@ -97,42 +103,13 @@ public class Photo implements Serializable{
 		date = formatDate.format(checkPhoto.lastModified());
 	}
 	
-	//These below may not be needed but we are holding onto it incase we need it for later use
-	//Serializing Photo
-	public boolean serializeFile(String photoName, Photo toSerialize) throws FileNotFoundException{
-		File serialPhoto = new File(photoName + ".ser");
-		if(!serialPhoto.exists()){
-			try {
-				System.out.println("Attempting to Serialize Photo");
-				FileOutputStream fileName = new FileOutputStream(photoName + ".ser");
-				ObjectOutputStream out = new ObjectOutputStream(fileName);
-				out.writeObject(toSerialize);
-				System.out.println("Successfully Serialized Photo");
-				return true;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-		return false;
+	//Might need more functions below for photo
+	public void addAlbumname(String addAlbum) {
+		System.out.println("PhotoAlbum name1: " + addAlbum);
+		connectedAlbums.add(addAlbum);
+		System.out.println("PhotoAlbum name2: " + addAlbum);
 	}
-	
-	//Deserializing Photo
-	public Photo deSeralizePhoto(String serializedFile) throws FileNotFoundException, ClassNotFoundException {
-		Photo tempPhoto = null;
-		FileInputStream file;
-		try {
-			file = new FileInputStream(serializedFile);
-			ObjectInputStream in = new ObjectInputStream(file);
-			
-			tempPhoto = (Photo)in.readObject();
-			in.close();
-			file.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return tempPhoto;
+	public void deleteSelectedalbum(int albumIndex) {
+		connectedAlbums.remove(albumIndex);
 	}
 }
