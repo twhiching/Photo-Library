@@ -78,7 +78,9 @@ public class Default implements Serializable {
     public void addAlbumphoto(String albumName, Photo selectedPhoto) {
    	 	int albumIndex = findAlbum(albumName);
    	 	if(albumIndex != -1) {   	 	   
-   	 		albumList.get(albumIndex).addPhoto(selectedPhoto); 	 		
+   	 		albumList.get(albumIndex).addPhoto(selectedPhoto); 	 	
+   	 		//Then sort the photos in the album by most recent date
+   	 		
    	 	}
     }
 

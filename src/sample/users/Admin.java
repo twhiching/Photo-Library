@@ -34,11 +34,12 @@ public class Admin implements Serializable{
 	                	
 	                	//System.out.println("Adding stock photos");
 	                	//Load Photos onto stock album
-	                	stockObject.addAlbumphoto("stock", new Photo("bojack", stockPath + "/bojack.jpg"));
-	                	stockObject.addAlbumphoto("stock", new Photo("clippy", stockPath + "/clippy.jpg"));
-	                	stockObject.addAlbumphoto("stock", new Photo("discord", stockPath + "/discord.jpg"));
-	                	stockObject.addAlbumphoto("stock", new Photo("gitBlame", stockPath + "/gitBlame.jpeg"));
-	                	stockObject.addAlbumphoto("stock", new Photo("houseMD", stockPath + "/houseMD.jpg"));
+	                	stockObject.addAlbumphoto("stock", new Photo("bojack", stockPath + "/bojack.jpg",stockAlbum.getName()));
+	                	stockObject.addAlbumphoto("stock", new Photo("clippy", stockPath + "/clippy.jpg",stockAlbum.getName()));
+	                	stockObject.addAlbumphoto("stock", new Photo("discord", stockPath + "/discord.jpg",stockAlbum.getName()));
+	                	stockObject.addAlbumphoto("stock", new Photo("gitBlame", stockPath + "/gitBlame.jpeg",stockAlbum.getName()));
+	                	stockObject.addAlbumphoto("stock", new Photo("houseMD", stockPath + "/houseMD.jpg",stockAlbum.getName()));
+	                	stockObject.addAlbumphoto("stock", new Photo("sesh", stockPath + "/sesh.jpg",stockAlbum.getName()));
 	                	
 	                	//Serializing
 	                	FileOutputStream fileOut = new FileOutputStream(targetPath);

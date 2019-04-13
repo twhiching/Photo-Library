@@ -80,7 +80,7 @@ public class Photo implements Serializable{
 	}
 	
 	/* Default Classes */
-	public Photo(String givenName, String givenPath) {
+	public Photo(String givenName, String givenPath, String album) {
 		name = givenName;
 		caption = null;
 		tagOne = null;
@@ -90,6 +90,7 @@ public class Photo implements Serializable{
 		File checkPhoto = new File(givenPath);
 		date = formatDate.format(checkPhoto.lastModified());
 		connectedAlbums = new ArrayList<String>();
+		addAlbumname(album);
 	}
 	
 	public Photo(String givenName, String givenPath, String givenCaption, String givenTagOne, String givenTagTwo) {
@@ -105,11 +106,33 @@ public class Photo implements Serializable{
 	
 	//Might need more functions below for photo
 	public void addAlbumname(String addAlbum) {
-		System.out.println("PhotoAlbum name1: " + addAlbum);
+		//System.out.println("PhotoAlbum name1: " + addAlbum);
 		connectedAlbums.add(addAlbum);
-		System.out.println("PhotoAlbum name2: " + addAlbum);
+		//System.out.println("PhotoAlbum name2: " + addAlbum);
 	}
-	public void deleteSelectedalbum(int albumIndex) {
-		connectedAlbums.remove(albumIndex);
+	public void deleteSelectedalbum(String album) {
+		connectedAlbums.remove(getSelectedalbum(album));
 	}
+	
+	public int getSelectedalbum(String album) {
+		int index = 0;
+		ArrayList<String> tempAlbums = listAlbumnames();
+    	for(String i : tempAlbums) {
+    		if(connectedAlbums.get(index)!= i)
+    			index++;
+    		else
+    			System.out.println("Index in the photo thing is: "+index);
+    			return index;
+    	}
+    	System.out.println("Index in the photo thing is -1");
+    	return -1;
+	}
+	
+	public ArrayList<String> listAlbumnames(){
+    	ArrayList<String> tempAlbum = new ArrayList<String>();
+    	for(int i = 0; i < connectedAlbums.size(); i++)
+    		tempAlbum.add(connectedAlbums.get(i));
+    	
+    	return tempAlbum;
+    }
 }

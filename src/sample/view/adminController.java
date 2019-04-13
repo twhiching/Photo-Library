@@ -2,6 +2,7 @@ package sample.view;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Optional;
 
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
@@ -86,7 +88,7 @@ public class adminController implements Serializable {
 		dialog.setTitle("Add new user");
 		dialog.setHeaderText("Enter user name:");
 		dialog.setContentText("Name:");
-		Optional<String> result = dialog.showAndWait();
+		Optional<String> result = dialog.showAndWait();	
 
 		//Create the path for which the users folder will reside
         String dir = System.getProperty("user.dir");
@@ -170,29 +172,34 @@ public class adminController implements Serializable {
 			alert.setContentText("A user must be picked in order to delete them from the database!");
 			alert.showAndWait();
 	    }else {	
-		    //Set up the path for which to search through
-			String dir = System.getProperty("user.dir");
-	        String path = dir+"/src/sample/users/";
-	        File folder = new File(path);
-			File[] files = folder.listFiles();
-			//Check if user directory exist, if not return back empty userNames
-			if(!folder.exists()) {
-				return;
-			}
-			//Search through the directory and all its subdirectory's recursively to find all users folders, and thier .ser files
-			for (File file : files) {
-				if (file.isDirectory()) {
-					//If directory, check to see if name matches, if so delete the directory
-					System.out.println(file.getName());
-					if(file.getName().equals(item)) {
-						deleteFolder(file);
-					}
-				} else {
-					//Else move on
-					continue;
+	    		
+			Alert alert = new Alert(AlertType.CONFIRMATION, "Delete " + item + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+			alert.showAndWait();
+			if (alert.getResult() == ButtonType.YES) {
+				//Set up the path for which to search through
+				String dir = System.getProperty("user.dir");
+		        String path = dir+"/src/sample/users/";
+		        File folder = new File(path);
+				File[] files = folder.listFiles();
+				//Check if user directory exist, if not return back empty userNames
+				if(!folder.exists()) {
+					return;
 				}
-			}
-			adminUpdatelistView();
+				//Search through the directory and all its subdirectory's recursively to find all users folders, and thier .ser files
+				for (File file : files) {
+					if (file.isDirectory()) {
+						//If directory, check to see if name matches, if so delete the directory
+						System.out.println(file.getName());
+						if(file.getName().equals(item)) {
+							deleteFolder(file);
+						}
+					} else {
+						//Else move on
+						continue;
+					}
+				}
+				adminUpdatelistView();
+			}		  
 	    }
 	}
 	
