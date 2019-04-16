@@ -26,6 +26,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.DatePicker;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -542,6 +543,12 @@ public class userController implements Serializable{
 		}
 		Pattern firstCheck = Pattern.compile("AND|OR");
 		Matcher matches = firstCheck.matcher(toSearch);
+		//Single Date regex
+		Pattern singleDate = Pattern.compile("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$");
+		Matcher singleDateMatches = singleDate.matcher(toSearch);
+		//Date range regex
+		Pattern rangeDate = Pattern.compile("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}-(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$");
+		Matcher rangeDateMatches = rangeDate.matcher(toSearch);
 		//Triple check if value contains boolean statement, date, else false
 		if(matches.find()) {
 			//Example input location=paris AND weather=sunny
@@ -561,7 +568,6 @@ public class userController implements Serializable{
 						/*if(p.getTagone().toString().equals(booleanSplit[0]) && p.getTagtwo().toString().equals(booleanSplit[1])
 							|| p.getTagone().toString().equals(booleanSplit[1]) && p.getTagtwo().toString().equals(booleanSplit[0])) {
 							System.out.println("Photo matched: " + p.getName());
-							//Review this with Mike tomorrow 
 							int pIndex = p.getSelectedalbum("Searched");
 							//user.getAlbum(pIndex);
 							Photo tempPhoto = new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName());
@@ -592,30 +598,29 @@ public class userController implements Serializable{
 		}
 		//Date range (MM/dd/yyyy-MM/dd/yyyy)
 		//Need a better way to see if it is a date
-		else if(toSearch.length() == 21) {
-			System.out.println("This is a time period result");
-			
+		else if(rangeDateMatches.find()) {
+			System.out.println("This is a time range period result");
 			//Converting string to date format
 			DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-			//Split date into two differnt string array indexes
+			//Split date into two different string array indexes
 			try {
 				String[] dateSplit = toSearch.split("-");
 				Date dateStart = df.parse(dateSplit[0]);
 				Date dateEnd = df.parse(dateSplit[1]);
-				
+				System.out.println("Date Start: " + dateStart + " | date End: " + dateEnd);
 				//check if photo is within a certain date range
 				for(Album a : user.getAlbums()) {
 					for(Photo p : a.getAlbumPhotos()) {
 						Date photoDate = df.parse(p.getDate());
 						if(photoDate.after(dateStart) && photoDate.before(dateEnd)) {
-							//Check if photo exists in searchedAlbum already
-							int pIndex = p.getSelectedalbum("Searched");
-							Photo tempPhoto = new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName());
+							//Check for duplicate
+							Photo tempPhoto = p;
 							if(!searchedPhotos.contains(tempPhoto)) {
-								searchedPhotos.add(new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName()));
+								p.getconnectedAlbums().add("Searched");
+								searchedPhotos.add(p);
 							}else {
-								System.out.println("Denied adding photo");							
-								}
+								System.out.println("Invalid attempt to add a photo");
+							}
 						}else {
 							System.out.println("Error in date range class");
 						}
@@ -628,7 +633,34 @@ public class userController implements Serializable{
 			}
 			
 		}
-		//Else key=value pair
+		//Single date value
+		else if(singleDateMatches.find()){
+			System.out.println("In Single Date Search");
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+			try {
+				Date targetDate = df.parse(toSearch);
+				System.out.println("Pasred Target Date: " + targetDate);
+				for(Album a : user.getAlbums()) {
+					for(Photo p : a.getAlbumPhotos()) {
+						Date photoDate = df.parse(p.getDate());
+						if(photoDate.equals(targetDate)) {
+							Photo tempPhoto = p;
+							if(!searchedPhotos.contains(tempPhoto)) {
+								p.getconnectedAlbums().add("Searched");
+								searchedPhotos.add(p);
+							}else {
+								System.out.println("Invalid attempt to add a photo");
+							}
+						}else {
+							System.out.println("Error in date range class");
+						}
+					}
+				}
+			}catch(ParseException e){
+				e.printStackTrace();
+			}
+		}
+		//key=value pair
 		else if(toSearch.contains("=")) {
 			System.out.println("One search query");
 			//You are searching by key=value pair
