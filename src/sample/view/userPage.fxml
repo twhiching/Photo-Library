@@ -62,9 +62,9 @@
                <children>
                   <ComboBox fx:id="moveBox" layoutX="40.0" layoutY="422.0" onAction="#movePhoto" prefHeight="25.0" prefWidth="74.0" promptText="Move" />
                   <ComboBox fx:id="copyBox" layoutX="136.0" layoutY="422.0" onAction="#copyPhoto" prefHeight="25.0" prefWidth="74.0" promptText="Copy" />
-                  <TextField fx:id="captionArea" layoutX="62.0" layoutY="360.0" prefHeight="0.0" prefWidth="149.0" />
+                  <TextField fx:id="tag2Area" layoutX="62.0" layoutY="360.0" prefHeight="0.0" prefWidth="149.0" />
                   <TextField fx:id="tag1Area" layoutX="62.0" layoutY="325.0" />
-                  <TextField fx:id="tag2Area" layoutX="62.0" layoutY="290.0" />
+                  <TextField fx:id="captionArea" layoutX="62.0" layoutY="290.0" />
                   <Label layoutX="8.0" layoutY="294.0" text="Caption" />
                   <Label layoutX="14.0" layoutY="329.0" text="Tag 1" />
                   <Label layoutX="14.0" layoutY="361.0" text="Tag 2" />
