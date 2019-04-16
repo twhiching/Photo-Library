@@ -462,12 +462,7 @@ public class userController implements Serializable{
 				if (alert.getResult() == ButtonType.YES) {
 					System.out.println("index is:"+index);
 					System.out.println("Selected photo to delete is:"+albumPhotos.get(index).getName());
-					/////////////////////////////////////////////////////////////////////////////////
 					Photo photo = user.getAlbum(albumIndex).getPhoto(index);
-					//ArrayList<String> albumsConnectedToPhoto = photo.getconnectedAlbums();
-					//LinkedList<Photo> albumPhotos = user.getAlbum(user.findAlbum(albumsConnectedToPhoto.get(i))).getAlbumPhotos();
-					
-					//////////////////////////////////////////////////////////////////////////////////
 					user.getAlbum(albumIndex).getPhoto(index).deleteSelectedalbum(album);
 					user.getAlbum(albumIndex).deletePhoto(albumPhotos.get(index));
 					//user.deletePhoto(albumPhotos.get(index));
@@ -530,9 +525,21 @@ public class userController implements Serializable{
 		System.out.println("Searching: " + searchBox.getText());
 		String toSearch = searchBox.getText();
 		//Temperary Photo object that will save all the photos found in the search result
-		LinkedList<Photo> searchedPhotos = new LinkedList<Photo>();
-		//Creating a new album called searched
-		user.addAlbum(new Album("Searched"));
+		LinkedList<Photo> searchedPhotos = null;
+		//Creating a new album called searched, check if album already exist, if yes delete all photos
+		if(!user.duplicateAlbumcheck("Searched")) {
+			System.out.println("This album already exists, deleting all perviously stored photos");
+			int searchIndex = user.findAlbum("Searched");
+			System.out.println("Index of search is: " + searchIndex);
+			searchedPhotos = user.getAlbum(searchIndex).getAlbumPhotos();
+			if(!searchedPhotos.isEmpty()) {
+				searchedPhotos.clear();
+			}
+		}else {
+			System.out.println("Creating new searched Album");
+			searchedPhotos = new LinkedList<Photo>();
+			user.addAlbum(new Album("Searched"));
+		}
 		Pattern firstCheck = Pattern.compile("AND|OR");
 		Matcher matches = firstCheck.matcher(toSearch);
 		//Triple check if value contains boolean statement, date, else false
@@ -549,7 +556,9 @@ public class userController implements Serializable{
 				//Iterate through all albums->photos to check if true
 				for(Album a : user.getAlbums()) {
 					for(Photo p : a.getAlbumPhotos()) {
-						if(p.getTagone().toString().equals(booleanSplit[0]) && p.getTagtwo().toString().equals(booleanSplit[1])
+						System.out.println("Tag one: " + p.getTagone() + " | Tag two: " + p.getTagtwo());
+						//System.out.println("Boolean tags: " + booleanSplit[0] + " | " + booleanSplit[1]);
+						/*if(p.getTagone().toString().equals(booleanSplit[0]) && p.getTagtwo().toString().equals(booleanSplit[1])
 							|| p.getTagone().toString().equals(booleanSplit[1]) && p.getTagtwo().toString().equals(booleanSplit[0])) {
 							System.out.println("Photo matched: " + p.getName());
 							//Review this with Mike tomorrow 
@@ -561,7 +570,7 @@ public class userController implements Serializable{
 								searchedPhotos.add(new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName()));
 							}else
 								System.out.println("Denied Attempting to add redudenct photo");
-						}
+						}*/
 					}
 				}
 			}else {
@@ -619,25 +628,51 @@ public class userController implements Serializable{
 			}
 			
 		}
-		//Else one search query
-		//Until I figure out a better way for this statement
-		else if(toSearch.length() > 5) {
+		//Else key=value pair
+		else if(toSearch.contains("=")) {
 			System.out.println("One search query");
 			//You are searching by key=value pair
-			if(toSearch.contains("=")) {
-				for(Album a : user.getAlbums()) {
-					for(Photo p : a.getAlbumPhotos()) {
-						if(p.getTagone().equals(toSearch) || p.getTagtwo().equals(toSearch)){
+			for(Album a : user.getAlbums()) {
+				for(Photo p : a.getAlbumPhotos()) {
+					System.out.println("Photo " + p.getName() + " has " + p.getTagone() + " | " + p.getTagtwo());
+					//If both tags are not null
+					if(p.getTagone() != null && p.getTagtwo() != null) {
+						System.out.println("These two values are not null");
+						if(p.getTagone().equals(toSearch)) {
 							//Check for duplicate
-							int pIndex = p.getSelectedalbum("Searched");
-							Photo tempPhoto = new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName());
+							Photo tempPhoto = p;
 							if(!searchedPhotos.contains(tempPhoto)) {
-								searchedPhotos.add(tempPhoto);
+								p.getconnectedAlbums().add("Searched");
+								searchedPhotos.add(p);
 							}else {
 								System.out.println("Invalid attempt to add a photo");
 							}
 						}
-					}
+					}else if(p.getTagone() == null && p.getTagtwo() != null) {
+						if(p.getTagone().equals(toSearch)) {
+							//Check for duplicate
+							Photo tempPhoto = p;
+							if(!searchedPhotos.contains(tempPhoto)) {
+								p.getconnectedAlbums().add("Searched");
+								searchedPhotos.add(p);
+							}else {
+								System.out.println("Invalid attempt to add a photo");
+							}
+						}
+					//Tag two is null
+					}else if(p.getTagone() != null && p.getTagtwo() == null) {
+						if(p.getTagone().equals(toSearch)) {
+							//Check for duplicate
+							Photo tempPhoto = p;
+							if(!searchedPhotos.contains(tempPhoto)) {
+								p.getconnectedAlbums().add("Searched");
+								searchedPhotos.add(p);
+							}else {
+								System.out.println("Invalid attempt to add a photo");
+							}
+						}
+					}else
+						continue;
 				}
 			}
 		}else{
@@ -649,8 +684,8 @@ public class userController implements Serializable{
 		}
 		listView.getSelectionModel().clearSelection();
 		searchBox.setText("");
-		
 		loadUserPhotos(searchedPhotos);
+		updateListView();
 	}
 	
 	@FXML
@@ -667,12 +702,8 @@ public class userController implements Serializable{
     		user.addAlbumphoto(destinationAlbum, photoSelected);
     		//user.getAlbum(user.findAlbum(sourceAlbum)).deletePhoto(photoSelected);
     		photoSelected.addAlbumname(destinationAlbum);
-    		//***************************New method to change arrayList in photo variable**********************************************//
-    		//int targetAlbumindex = user.findAlbum(sourceAlbum);
     		user.getAlbum(user.findAlbum(sourceAlbum)).getPhoto(index).deleteSelectedalbum(sourceAlbum);
     		user.getAlbum(user.findAlbum(sourceAlbum)).deletePhoto(photoSelected);
-    	
-    		//*****************************************************//
     		selectedPhoto.setImage(null);
     		photoName.setText(null);
     		LinkedList<Photo> updatedPhotos = user.getAlbum(user.findAlbum(sourceAlbum)).getAlbumPhotos();
@@ -733,7 +764,7 @@ public class userController implements Serializable{
 			String dir = System.getProperty("user.dir");
 	        String PATH = dir+"/src/sample/users/";
 			String directoryName = PATH.concat(userName+"/"+userName+".ser");
-			System.out.println("Path to .ser file is:"+directoryName);
+			//System.out.println("Path to .ser file is:"+directoryName);
 			try{    
 	            //Saving of object in a file 
 	            FileOutputStream file = new FileOutputStream(directoryName); 

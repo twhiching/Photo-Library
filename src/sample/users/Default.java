@@ -58,12 +58,12 @@ public class Default implements Serializable {
     public int findAlbum(String name) {
     	int index = 0;
     	for(String i : listAlbumnames()) {
-    		if(albumList.get(index).getName() != name)
+    		if(i != name)
     			index++;
     		else
     			return index;
     	}
-    	return -1;
+    	return index-1;
     }
 
     //Methods to add new albums and photos to the users lists
