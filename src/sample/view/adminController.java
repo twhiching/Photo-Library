@@ -45,7 +45,6 @@ public class adminController implements Serializable {
 	//Start method loads up all users to the list view
 	public void start(Stage stage) {
 		mainStage = stage;
-		// TODO Auto-generated method stub
 		//Get current path of the user directory
 				String dir = System.getProperty("user.dir");
 		        String path = dir+"/src/sample/users/";

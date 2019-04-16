@@ -108,22 +108,51 @@ public class Photo implements Serializable{
 	public void addAlbumname(String addAlbum) {
 		//System.out.println("PhotoAlbum name1: " + addAlbum);
 		connectedAlbums.add(addAlbum);
+		//remove any duplicates! this si a quick fix for the problem!
+		ArrayList<String> newList = new ArrayList<String>();
+
+		// Traverse through the first list
+		for (String element : connectedAlbums) {
+
+			// If this element is not present in newList
+			// then add it
+			if (!newList.contains(element)) {
+
+				newList.add(element);
+			}
+		}
+
+		connectedAlbums = newList;
+
 		//System.out.println("PhotoAlbum name2: " + addAlbum);
 	}
 	public void deleteSelectedalbum(String album) {
-		connectedAlbums.remove(getSelectedalbum(album));
+		System.out.println("Album passed in to photo is: "+ album);
+		System.out.println("Before");
+		System.out.println(connectedAlbums);
+		int i = getSelectedAlbum(album);
+		if(i > -1){
+			connectedAlbums.remove(i);
+		}
+		System.out.println("After");
+		System.out.println(connectedAlbums);
 	}
 	
-	public int getSelectedalbum(String album) {
+	public int getSelectedAlbum(String album) {
 		int index = 0;
 		ArrayList<String> tempAlbums = listAlbumnames();
+		System.out.println("Here is the tempAlbum: "+tempAlbums);
     	for(String i : tempAlbums) {
-    		if(connectedAlbums.get(index)!= i)
-    			index++;
-    		else
-    			System.out.println("Index in the photo thing is: "+index);
-    			return index;
-    	}
+			System.out.println("I is: " + i);
+			System.out.println("connectedAlbums index is: " + tempAlbums.get(index));
+			if (!(tempAlbums.get(index).equals(album))) {
+				System.out.println("Index is increasing!");
+				index++;
+			}else{
+				System.out.println("Index in the photo thing is: "+index);
+				return index;
+			}
+		}
     	System.out.println("Index in the photo thing is -1");
     	return -1;
 	}

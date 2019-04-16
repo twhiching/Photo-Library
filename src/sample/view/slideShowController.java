@@ -45,30 +45,29 @@ public class slideShowController {
 		userName = user;
 		this.index = index;
 		this.album = album;
-		System.out.println("User is: " + user);
-		System.out.println("Album is: " + album.getName());
-		System.out.println("Album size is: "+ album.getAlbumPhotos().size());
-		System.out.println("index of photo is: " + index);	
+		//System.out.println("User is: " + user);
+		//System.out.println("Album is: " + album.getName());
+		//System.out.println("Album size is: "+ album.getAlbumPhotos().size());
+		//System.out.println("index of photo is: " + index);
 		loadImage(index);
 	}
 	
 	@FXML
 	public void back(ActionEvent evt) {
-		System.out.println("In back method");
 		index = index - 1;
 		if(index < 0) {
-			index = 0;
+			//index = 0;
+			index = album.getAlbumPhotos().size() - 1;
 		}
 		loadImage(index);
 	}
 	
 	@FXML
 	public void foward(ActionEvent evt) {
-		System.out.println("In foward method");
 		index = index + 1;
-		System.out.println("Index size is: "+ index);
 		if(index > album.getAlbumPhotos().size() - 1) {
-			index = album.getAlbumPhotos().size() - 1;
+			//index = album.getAlbumPhotos().size() - 1;
+			index = 0;
 		}
 		loadImage(index);
 	}
@@ -87,7 +86,6 @@ public class slideShowController {
 	 		mainStage.setResizable(false);
 	 		mainStage.show();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
  		
@@ -104,7 +102,6 @@ public class slideShowController {
 	        imageView.setFitWidth(900);
 	        imageView.setFitHeight(665); 	  
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}

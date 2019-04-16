@@ -162,7 +162,6 @@ public class userController implements Serializable{
 			try {
 				logout(null);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} );
@@ -171,7 +170,7 @@ public class userController implements Serializable{
 	private void loadAlbumPhotos() {
 		int albumIndex = listView.getSelectionModel().getSelectedIndex();
 		isPhotoShown = false;
-		System.out.println("Album name is: "+albumIndex);
+		//System.out.println("Album name is: "+albumIndex);
 		thumbnailViewText.setText(listView.getSelectionModel().getSelectedItem()+" photo's");
 		if(albumIndex > -1) {
 			LinkedList<Photo> userPhotos = user.getAlbum(albumIndex).getAlbumPhotos();
@@ -247,7 +246,6 @@ public class userController implements Serializable{
 		            		//System.out.println("Here is the name of the photo selected:"+userPhotos.get(index).getName());
 		            		
 						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}	            		        	            	            		
 	            	}
@@ -255,7 +253,6 @@ public class userController implements Serializable{
 	            tilePane.getChildren().addAll(imageView);	      
 	            
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}        	          
           }         
@@ -272,7 +269,7 @@ public class userController implements Serializable{
 		//TODO add a dialog popup to confirm user choice of logging out
 		//Serialized the user object before logging out
 		//Create the path for where the users photos are stored
-		System.out.println("Closing the stage");
+		//System.out.println("Closing the stage");
         String dir = System.getProperty("user.dir");
         String PATH = dir+"/src/sample/users/";
 		String directoryName = PATH.concat(userName+"/"+userName+".ser");
@@ -340,7 +337,7 @@ public class userController implements Serializable{
 			alert.setContentText("An album must be picked to add a photo");
 			alert.showAndWait();
 		}else {
-			System.out.println("Selected Album: " + selectedAlbum);
+			//System.out.println("Selected Album: " + selectedAlbum);
 			//Pop up dialog to get user name for the user object
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("File Explorer");
@@ -352,8 +349,7 @@ public class userController implements Serializable{
 				    new FileChooser.ExtensionFilter("BMP", "*.bmp"),
 				    new FileChooser.ExtensionFilter("PNG", "*.png")
 				);
-			
-			//TODO Check to make sure user didn't back out and not select a photo
+
 			File selectedFile = fileChooser.showOpenDialog(mainStage);
 			//After selecting a file it saves the true path in this variable
 			if(selectedFile != null ) {
@@ -368,7 +364,7 @@ public class userController implements Serializable{
 		        System.out.println("Adding new photo");
 				Photo userPhoto = new Photo(photoNamecleaned, photoPath,selectedAlbum);
 				//Breaks when adding photo here
-				System.out.println("UserController before photo is added: " + selectedAlbum);
+				//System.out.println("UserController before photo is added: " + selectedAlbum);
 				//userPhoto.addAlbumname(selectedAlbum);
 				user.addAlbumphoto(selectedAlbum, userPhoto);
 				LinkedList<Photo> Photos = user.getAlbum(user.findAlbum(selectedAlbum)).getAlbumPhotos();
@@ -396,11 +392,11 @@ public class userController implements Serializable{
 					System.out.println(i);
 				}
 				//Go through all albums asscoiated with that photo
-				System.out.println("Size of the albumsConnectedToPhoto is: "+albumsConnectedToPhoto.size());
+				//System.out.println("Size of the albumsConnectedToPhoto is: "+albumsConnectedToPhoto.size());
 				for(int i = 0; i < albumsConnectedToPhoto.size();++i) {
 					
 					LinkedList<Photo> albumPhotos = user.getAlbum(user.findAlbum(albumsConnectedToPhoto.get(i))).getAlbumPhotos();
-					System.out.println("Size of the albumPhotos is: "+albumPhotos.size());
+					//System.out.println("Size of the albumPhotos is: "+albumPhotos.size());
 					//Go through all photos in that album				
 					for(int j = 0; j <albumPhotos.size(); ++j) {	
 						//Check to see if photo paths match before making the changes!
@@ -461,8 +457,8 @@ public class userController implements Serializable{
 
 				System.out.println(albumPhotos.size());
 				if (alert.getResult() == ButtonType.YES) {
-					System.out.println("index is:"+index);
-					System.out.println("Selected photo to delete is:"+albumPhotos.get(index).getName());
+					//System.out.println("index is:"+index);
+					//heySystem.out.println("Selected photo to delete is:"+albumPhotos.get(index).getName());
 					Photo photo = user.getAlbum(albumIndex).getPhoto(index);
 					user.getAlbum(albumIndex).getPhoto(index).deleteSelectedalbum(album);
 					user.getAlbum(albumIndex).deletePhoto(albumPhotos.get(index));
@@ -488,10 +484,32 @@ public class userController implements Serializable{
 			    	deleteAlert.showAndWait();
 			    	//Delete selected item
 			    	if(deleteAlert.getResult() == ButtonType.YES) {
+			    		//Must first disassociate all photos with this album in all the other albums the user has
 			    		System.out.println("Deleting: " + item);
+			    		LinkedList<Photo> deletingAlbumPhotos = user.getAlbum(user.findAlbum(item)).getAlbumPhotos();
+			    		//Now run a for loop through all the users albums and check if there are any photos in those albums that match with the photos in the deleting album
+						LinkedList<Album> allUserAlbums = user.getAlbums();
+						//Loop through all of the user albums
+						for(int i = 0; i < allUserAlbums.size(); ++i){
+							//Skip the album that's gonna be deleted
+							if(allUserAlbums.get(i).getName().equals(item)){
+								continue;
+							}
+							//Loop through all photos in the deleting album
+							for(int k = 0; k < deletingAlbumPhotos.size(); ++k){
+								//Loop through all photos in the non deleting album
+								for(int j = 0; j < allUserAlbums.get(i).getAlbumPhotos().size(); ++j){
+									System.out.println("Comparing photo from deleting album: "+ deletingAlbumPhotos.get(k).getPhotoPath());
+									System.out.println("To photo from non deleting album: "+ allUserAlbums.get(i).getPhoto(j).getPhotoPath());
+									if(deletingAlbumPhotos.get(k).getPhotoPath().equals(allUserAlbums.get(i).getPhoto(j).getPhotoPath())){
+										System.out.println("In album: "+ user.getAlbum(i).getName()+" looking at photo: "+ user.getAlbum(i).getPhoto(j).getPhotoPath() + " disassociating this album from it: " + item);
+										user.getAlbum(i).getPhoto(j).deleteSelectedalbum(item);
+									}
+								}
+							}
+						}
 					    user.deleteAlbumindex(index);	
 					    updateListView();
-					    
 			    	}			    	
 				    //Reset all text areas to blanks
 				    photoName.setText("");
@@ -585,7 +603,7 @@ public class userController implements Serializable{
 					for(Photo p : a.getAlbumPhotos()) {
 						if(p.getTagone().toString().equals(booleanSplit[0]) || p.getTagtwo().toString().equals(booleanSplit[1])) {
 							System.out.println("Photo matched: " + p.getName());
-							int pIndex = p.getSelectedalbum("Searched");
+							int pIndex = p.getSelectedAlbum("Searched");
 							Photo tempPhoto = new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName());
 							if(!searchedPhotos.contains(tempPhoto)) {
 								searchedPhotos.add(new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName()));
@@ -723,7 +741,6 @@ public class userController implements Serializable{
 	@FXML
 	public void movePhoto(ActionEvent event) {
 		//Not sure why thios place throws an excpetion, if moveBox.getSelectionModel().clearSelection(); is removed the exception is no longer thrown.
-		//TODO add popup box to confirm user choice
 		String destinationAlbum = moveBox.getSelectionModel().getSelectedItem().toString();
 		String sourceAlbum = listView.getSelectionModel().getSelectedItem();
 		Alert deleteAlert = new Alert(AlertType.CONFIRMATION, "Move photo: " + photoSelected.getName() + " to album: " +destinationAlbum + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
@@ -751,16 +768,36 @@ public class userController implements Serializable{
 	@FXML
 	public void copyPhoto(ActionEvent event) {
 		//Not sure why thios place throws an excpetion, if copyBox.getSelectionModel().clearSelection(); is removed the exception is no longer thrown.
-		//TODO add popup box to confirm user choice
 		String selectedAlbum = copyBox.getSelectionModel().getSelectedItem().toString();
 		Alert deleteAlert = new Alert(AlertType.CONFIRMATION, "Copy photo: " + photoSelected.getName() + " to album: " +selectedAlbum + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     	deleteAlert.showAndWait();
     	if(deleteAlert.getResult() == ButtonType.YES) {
     		//int index = copyBox.getSelectionModel().getSelectedIndex();
     		System.out.println("Copy Selected: " + selectedAlbum);
-    		photoSelected.addAlbumname(selectedAlbum);
+    		//Need to add this instance of the album to al photos through the user's same photo
+			LinkedList<Album> userAlbums = user.getAlbums();
+			LinkedList<Photo> albumPhotos;
+
+			for(int i = 0; i < userAlbums.size();++i){
+				albumPhotos = userAlbums.get(i).getAlbumPhotos();
+				if(userAlbums.get(i).getName().equals(selectedAlbum)){
+					photoSelected.addAlbumname(selectedAlbum);
+					user.addAlbumphoto(selectedAlbum, photoSelected);
+					continue;
+				}else if(userAlbums.get(i).getName().equals(listView.getSelectionModel().getSelectedItem())){
+					System.out.println("Item is: "+ listView.getSelectionModel().getSelectedItem());
+				}
+				for(int j = 0; j < albumPhotos.size();++j){
+					System.out.println("ALbum comparing is: "+ userAlbums.get(i).getName());
+					if(albumPhotos.get(j).getPhotoPath().equals(photoSelected.getPhotoPath())){
+						System.out.println("This is the comparing photo: " + albumPhotos.get(j).getPhotoPath());
+						System.out.println("This is the selected photo: " + photoSelected.getPhotoPath());
+						user.getAlbum(user.findAlbum(userAlbums.get(i).getName())).getPhoto(j).addAlbumname(selectedAlbum);
+					}
+				}
+			}
+
     		System.out.println("Using Photo class successfully copied over");
-    		user.addAlbumphoto(selectedAlbum, photoSelected);
     		System.out.println("In the user class adding album photo");
     		try {
     			copyBox.getSelectionModel().clearSelection();
@@ -822,7 +859,6 @@ public class userController implements Serializable{
 		 		mainStage.setResizable(false);
 		 		mainStage.show();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -848,7 +884,6 @@ public class userController implements Serializable{
 			tag1Area.setText(photo.getTagone());
 			tag2Area.setText(photo.getTagtwo());   		
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

@@ -82,6 +82,7 @@ public class Default implements Serializable {
    	 		//Then sort the photos in the album by most recent date
    	 		
    	 	}
+   	 	//TODO sort photos by dates, earliest to latest
     }
 
     //Methods to delete an album or photo from the user lists
