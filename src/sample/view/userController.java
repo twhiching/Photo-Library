@@ -1,32 +1,20 @@
 package sample.view;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.DatePicker;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -41,15 +29,10 @@ import sample.users.Default;
 public class userController implements Serializable{
 
 	Stage mainStage;
-	
 	private int index;
-	
 	private String userName;
-
 	private Default user;
-	
 	private boolean isPhotoShown = false;
-	
 	private Photo photoSelected;
 	
 	@FXML         
@@ -113,7 +96,6 @@ public class userController implements Serializable{
 	private TextField searchBox;
 	
 	private ObservableList<String> obsList;
-	
 	public void setUserName(String name) {
 		userName = name;
 	}
@@ -121,11 +103,9 @@ public class userController implements Serializable{
 	public void start(Stage primaryStage,String name) {
 		
 		mainStage = primaryStage;
-
 		//Set user name
 		userName = name;
 		System.out.println("User name is:"+userName);
-		
 		//Set label for thumbnail view
 		thumbnailViewText.setText(userName+"'s photos");
 		
@@ -134,7 +114,6 @@ public class userController implements Serializable{
         String PATH = dir+"/src/sample/users/";
 		String directoryName = PATH.concat(userName+"/"+userName+".ser");
 		System.out.println("Path to .ser file is:"+directoryName);
-		
 		//Deserialize the user object first
 		user = null;
 		
@@ -146,9 +125,7 @@ public class userController implements Serializable{
 	           user = (Default)in.readObject(); 
 	           in.close(); 
 	           file.close(); 
-	              
-	           System.out.println("Object has been deserialized ");
-	    	         	          
+	           System.out.println("Object has been deserialized ");          
 	       }catch(IOException | ClassNotFoundException ex){
 	    	   ex.printStackTrace();
 	           System.out.println("IOException is caught"); 
@@ -176,11 +153,9 @@ public class userController implements Serializable{
 			LinkedList<Photo> userPhotos = user.getAlbum(albumIndex).getAlbumPhotos();
 			loadUserPhotos(userPhotos);
 		}
-		
 	}
 
 	private void loadUserPhotos(LinkedList<Photo> photos) {
-	     		
 		//Clear all elements of the photos
 		tilePane.getChildren().clear();
 		selectedPhoto.setImage(null);
@@ -194,9 +169,6 @@ public class userController implements Serializable{
         for(int i=0; i < photos.size(); i++){
         	FileInputStream input;
 			try {
-				/*for(int z = 0; z <  photos.size();z++) {
-					System.out.println(photos.get(z).getName());
-				}*/
 				input = new FileInputStream(photos.get(i).getPhotoPath());
 				Image image = new Image(input);
 	            ImageView imageView = new ImageView(image);           
@@ -204,14 +176,11 @@ public class userController implements Serializable{
 	            imageView.setFitHeight(88.5);     	            
 	            imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 	            	@Override
-	            	public void handle(MouseEvent mouseEvent) {
-	            		         	            		            		            		
+	            	public void handle(MouseEvent mouseEvent) {	         	            		            		            		
 	            		Node n = (Node) mouseEvent.getSource();
 	            		int xPos = (int) n.getLayoutX();
 	            		int yPos = (int) n.getLayoutY();	            		
 	            		int count = 0;
-	            		//System.out.println(xPos);
-	            		//System.out.println(yPos);
 	            		if(xPos == 15) {
 	            			xPos = 0;
 	            		}else {
@@ -221,11 +190,7 @@ public class userController implements Serializable{
 	            			yPos = yPos - 104;
 	            			++count;
 	            		}
-	            		
-	            		//System.out.println("x is:"+xPos);
-	            		//System.out.println("count is:"+count);
 	            		index = xPos + (count*2);
-	            		//System.out.println("index is:"+index);
 	            		FileInputStream input;
 						try {
 							System.out.println(photos.get(index).getPhotoPath());
@@ -233,43 +198,33 @@ public class userController implements Serializable{
 							//Keep a global copy of the photo on hand for your move and copy functions
 							photoSelected = photos.get(index);
 							Image image = new Image(input);		            		
-		            		selectedPhoto.setImage(image);
-		            		//selectedPhoto.setFitWidth(220);
-		            		//selectedPhoto.setFitHeight(199); 		                       		
+		            		selectedPhoto.setImage(image);		                       		
 		            		isPhotoShown = true;
 		            		photoName.setText(photos.get(index).getName());
 		            		date.setText(photos.get(index).getDate());
 		            		nameArea.setText(photos.get(index).getName());
 		            		captionArea.setText(photos.get(index).getCaption());
 		        			tag1Area.setText(photos.get(index).getTagone());
-		        			tag2Area.setText(photos.get(index).getTagtwo());
-		            		//System.out.println("Here is the name of the photo selected:"+userPhotos.get(index).getName());
-		            		
+		        			tag2Area.setText(photos.get(index).getTagtwo());		 
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 						}	            		        	            	            		
 	            	}
 	            });
-	            tilePane.getChildren().addAll(imageView);	      
-	            
+	            tilePane.getChildren().addAll(imageView);    
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}        	          
           }         
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Horizontal
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Vertical scroll bar
-        //scrollPane.setFitToWidth(true);
         scrollPane.setContent(tilePane);  
 	}
 
 	@FXML
 	public void logout(ActionEvent evt) throws IOException {
-		
-		
-		//TODO add a dialog popup to confirm user choice of logging out
 		//Serialized the user object before logging out
 		//Create the path for where the users photos are stored
-		//System.out.println("Closing the stage");
         String dir = System.getProperty("user.dir");
         String PATH = dir+"/src/sample/users/";
 		String directoryName = PATH.concat(userName+"/"+userName+".ser");
@@ -286,10 +241,9 @@ public class userController implements Serializable{
             System.out.println("Object has been serialized"); 
         } 
           
-        catch(IOException ex) { 
-            System.out.println("IOException is caught"); 
+        catch(IOException e) { 
+            e.printStackTrace(); 
         }
-		
 		FXMLLoader loader = new FXMLLoader();
  		loader.setLocation(getClass().getResource("/sample//view/loginPage.fxml"));	
 		AnchorPane root = (AnchorPane)loader.load();
@@ -301,8 +255,6 @@ public class userController implements Serializable{
 	}
 	@FXML
 	public void addAlbum(ActionEvent evt) throws IOException{
-		
-		//TODO add check to make sure that user is unique
 		//Pop up dialog to get user name for the user object
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("Add New Album");
@@ -327,7 +279,6 @@ public class userController implements Serializable{
 	
 	@FXML
 	public void addPhoto(ActionEvent evt) throws IOException {
-		//TODO add check to make sure that user is unique
 		//Make sure an album is selected
 		String selectedAlbum = listView.getSelectionModel().getSelectedItem();
 		if(selectedAlbum == null) {
@@ -337,7 +288,6 @@ public class userController implements Serializable{
 			alert.setContentText("An album must be picked to add a photo");
 			alert.showAndWait();
 		}else {
-			//System.out.println("Selected Album: " + selectedAlbum);
 			//Pop up dialog to get user name for the user object
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("File Explorer");
@@ -363,9 +313,6 @@ public class userController implements Serializable{
 				System.out.println("Full Path: " +photoPath);
 		        System.out.println("Adding new photo");
 				Photo userPhoto = new Photo(photoNamecleaned, photoPath,selectedAlbum);
-				//Breaks when adding photo here
-				//System.out.println("UserController before photo is added: " + selectedAlbum);
-				//userPhoto.addAlbumname(selectedAlbum);
 				user.addAlbumphoto(selectedAlbum, userPhoto);
 				LinkedList<Photo> Photos = user.getAlbum(user.findAlbum(selectedAlbum)).getAlbumPhotos();
 				loadUserPhotos(Photos);
@@ -392,11 +339,9 @@ public class userController implements Serializable{
 					System.out.println(i);
 				}
 				//Go through all albums asscoiated with that photo
-				//System.out.println("Size of the albumsConnectedToPhoto is: "+albumsConnectedToPhoto.size());
 				for(int i = 0; i < albumsConnectedToPhoto.size();++i) {
 					
 					LinkedList<Photo> albumPhotos = user.getAlbum(user.findAlbum(albumsConnectedToPhoto.get(i))).getAlbumPhotos();
-					//System.out.println("Size of the albumPhotos is: "+albumPhotos.size());
 					//Go through all photos in that album				
 					for(int j = 0; j <albumPhotos.size(); ++j) {	
 						//Check to see if photo paths match before making the changes!
@@ -411,8 +356,7 @@ public class userController implements Serializable{
 					}								
 				}										
 			}
-		}else if(isPhotoShown == false && album != null) { //This means the user wants to edit an album's name
-			
+			//This means the user wants to edit an album's name
 			//Pop up dialog to get user name for the user object
 			TextInputDialog dialog = new TextInputDialog();
 			dialog.setTitle("Edit Album's Name");
@@ -438,8 +382,6 @@ public class userController implements Serializable{
 	
 	@FXML
 	public void delete(ActionEvent evt) {
-		
-		//Can delete either an selected picture or album
 		String album = listView.getSelectionModel().getSelectedItem();
 		
 		if(album == null) {
@@ -457,12 +399,8 @@ public class userController implements Serializable{
 
 				System.out.println(albumPhotos.size());
 				if (alert.getResult() == ButtonType.YES) {
-					//System.out.println("index is:"+index);
-					//heySystem.out.println("Selected photo to delete is:"+albumPhotos.get(index).getName());
-					Photo photo = user.getAlbum(albumIndex).getPhoto(index);
 					user.getAlbum(albumIndex).getPhoto(index).deleteSelectedalbum(album);
 					user.getAlbum(albumIndex).deletePhoto(albumPhotos.get(index));
-					//user.deletePhoto(albumPhotos.get(index));
 					selectedPhoto.setImage(null);
 					photoName.setText(null);
 					LinkedList<Photo> updatedPhotos = user.getAlbum(albumIndex).getAlbumPhotos();
@@ -537,11 +475,8 @@ public class userController implements Serializable{
 		}	
 	}
 	
-	//There should be functionality to create an album containing the search results.
 	@FXML
 	public void onEnter(ActionEvent event) {
-		//System.out.println("In the search box");
-		System.out.println("Searching: " + searchBox.getText());
 		String toSearch = searchBox.getText();
 		//Temperary Photo object that will save all the photos found in the search result
 		LinkedList<Photo> searchedPhotos = null;
@@ -567,55 +502,72 @@ public class userController implements Serializable{
 		//Date range regex
 		Pattern rangeDate = Pattern.compile("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}-(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$");
 		Matcher rangeDateMatches = rangeDate.matcher(toSearch);
-		//Triple check if value contains boolean statement, date, else false
+		//Checks if statement contains AND|OR
 		if(matches.find()) {
-			//Example input location=paris AND weather=sunny
-			System.out.println("This search result contains a boolean result");
+			//System.out.println("This search result contains a boolean result");
 			String[] booleanSplit = null;
 			Pattern andCheck = Pattern.compile("AND");
 			Matcher andMatch = andCheck.matcher(toSearch);
 			if(andMatch.find()) {
+				System.out.println("In AND search");
 				booleanSplit = toSearch.split("AND");
-				//int totalAlbums = user.getAlbums().size();
-				//System.out.println("Number of albums: " + totalAlbums);
 				//Iterate through all albums->photos to check if true
 				for(Album a : user.getAlbums()) {
 					for(Photo p : a.getAlbumPhotos()) {
-						System.out.println("Tag one: " + p.getTagone() + " | Tag two: " + p.getTagtwo());
-						//System.out.println("Boolean tags: " + booleanSplit[0] + " | " + booleanSplit[1]);
-						/*if(p.getTagone().toString().equals(booleanSplit[0]) && p.getTagtwo().toString().equals(booleanSplit[1])
-							|| p.getTagone().toString().equals(booleanSplit[1]) && p.getTagtwo().toString().equals(booleanSplit[0])) {
-							System.out.println("Photo matched: " + p.getName());
-							int pIndex = p.getSelectedalbum("Searched");
-							//user.getAlbum(pIndex);
-							Photo tempPhoto = new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName());
-							//Add a check to make sure no two of the same photos are added
-							if(!searchedPhotos.contains(tempPhoto)) {
-								searchedPhotos.add(new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName()));
-							}else
-								System.out.println("Denied Attempting to add redudenct photo");
-						}*/
+						if(p.getTagone() != null && p.getTagtwo() != null) {
+							if( (p.getTagone().equals(booleanSplit[0].replace(" ", "")) && p.getTagtwo().equals(booleanSplit[1].replace(" ", "")))
+								|| (p.getTagone().equals(booleanSplit[1].replace(" ", "")) && p.getTagtwo().equals(booleanSplit[0].replace(" ", "")))){
+								System.out.println("Photo matched: " + p.getName());
+								//Add a check to make sure no two of the same photos are added
+								if(!searchedPhotos.contains(p)) {
+									p.getconnectedAlbums().add("Searched");
+									searchedPhotos.add(p);
+								}else
+									System.out.println("Duplicate photo found in search");
+							}
+						}
 					}
 				}
 			}else {
 				booleanSplit = toSearch.split("OR");
+				System.out.println("In OR search");
 				for(Album a: user.getAlbums()) {
 					for(Photo p : a.getAlbumPhotos()) {
-						if(p.getTagone().toString().equals(booleanSplit[0]) || p.getTagtwo().toString().equals(booleanSplit[1])) {
-							System.out.println("Photo matched: " + p.getName());
-							int pIndex = p.getSelectedAlbum("Searched");
-							Photo tempPhoto = new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName());
-							if(!searchedPhotos.contains(tempPhoto)) {
-								searchedPhotos.add(new Photo(p.getName(), p.getPhotoPath(), user.getAlbums().get(pIndex).getName()));
-							}else
-								System.out.println("Denied Attempting to add redudenct photo");
-						}
+						//If both tags are not null
+						System.out.println("Tag one:" + p.getTagone() + "-Tag two:" + p.getTagtwo());
+						if(p.getTagone() != null && p.getTagtwo() != null) {
+							if(p.getTagone().equals(booleanSplit[0].replace(" ", "")) || p.getTagone().equals(booleanSplit[0].replace(" ", ""))
+								|| p.getTagtwo().equals(booleanSplit[0].replace(" ", "")) || p.getTagtwo().equals(booleanSplit[1].replace(" ", ""))){
+								//Add a check to make sure no two of the same photos are added
+								if(!searchedPhotos.contains(p)) {
+									p.getconnectedAlbums().add("Searched");
+									searchedPhotos.add(p);
+								}else
+									System.out.println("Duplicate photo found in search");
+							}
+						}else if(p.getTagone() != null && p.getTagtwo() == null) {
+							if(p.getTagone().equals(booleanSplit[0].replace(" ", "")) || p.getTagone().equals(booleanSplit[1].replace(" ", ""))) {
+								if(!searchedPhotos.contains(p)) {
+									p.getconnectedAlbums().add("Searched");
+									searchedPhotos.add(p);
+								}else
+									System.out.println("Duplicate photo found in search");
+							}
+						}else if(p.getTagone() == null && p.getTagtwo() != null) {
+							if(p.getTagtwo().equals(booleanSplit[0].replace(" ", "")) || p.getTagtwo().equals(booleanSplit[1].replace(" ", ""))) {
+								if(!searchedPhotos.contains(p)) {
+									p.getconnectedAlbums().add("Searched");
+									searchedPhotos.add(p);
+								}else
+									System.out.println("Duplicate photo found in search");
+							}
+						}else
+							continue;
 					}
 				}
 			}
 		}
 		//Date range (MM/dd/yyyy-MM/dd/yyyy)
-		//Need a better way to see if it is a date
 		else if(rangeDateMatches.find()) {
 			System.out.println("This is a time range period result");
 			//Converting string to date format
@@ -632,8 +584,7 @@ public class userController implements Serializable{
 						Date photoDate = df.parse(p.getDate());
 						if(photoDate.after(dateStart) && photoDate.before(dateEnd)) {
 							//Check for duplicate
-							Photo tempPhoto = p;
-							if(!searchedPhotos.contains(tempPhoto)) {
+							if(!searchedPhotos.contains(p)) {
 								p.getconnectedAlbums().add("Searched");
 								searchedPhotos.add(p);
 							}else {
@@ -646,7 +597,6 @@ public class userController implements Serializable{
 				}
 				
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -662,8 +612,7 @@ public class userController implements Serializable{
 					for(Photo p : a.getAlbumPhotos()) {
 						Date photoDate = df.parse(p.getDate());
 						if(photoDate.equals(targetDate)) {
-							Photo tempPhoto = p;
-							if(!searchedPhotos.contains(tempPhoto)) {
+							if(!searchedPhotos.contains(p)) {
 								p.getconnectedAlbums().add("Searched");
 								searchedPhotos.add(p);
 							}else {
@@ -681,17 +630,13 @@ public class userController implements Serializable{
 		//key=value pair
 		else if(toSearch.contains("=")) {
 			System.out.println("One search query");
-			//You are searching by key=value pair
 			for(Album a : user.getAlbums()) {
 				for(Photo p : a.getAlbumPhotos()) {
 					System.out.println("Photo " + p.getName() + " has " + p.getTagone() + " | " + p.getTagtwo());
-					//If both tags are not null
 					if(p.getTagone() != null && p.getTagtwo() != null) {
 						System.out.println("These two values are not null");
 						if(p.getTagone().equals(toSearch)) {
-							//Check for duplicate
-							Photo tempPhoto = p;
-							if(!searchedPhotos.contains(tempPhoto)) {
+							if(!searchedPhotos.contains(p)) {
 								p.getconnectedAlbums().add("Searched");
 								searchedPhotos.add(p);
 							}else {
@@ -701,8 +646,7 @@ public class userController implements Serializable{
 					}else if(p.getTagone() == null && p.getTagtwo() != null) {
 						if(p.getTagone().equals(toSearch)) {
 							//Check for duplicate
-							Photo tempPhoto = p;
-							if(!searchedPhotos.contains(tempPhoto)) {
+							if(!searchedPhotos.contains(p)) {
 								p.getconnectedAlbums().add("Searched");
 								searchedPhotos.add(p);
 							}else {
@@ -713,8 +657,7 @@ public class userController implements Serializable{
 					}else if(p.getTagone() != null && p.getTagtwo() == null) {
 						if(p.getTagone().equals(toSearch)) {
 							//Check for duplicate
-							Photo tempPhoto = p;
-							if(!searchedPhotos.contains(tempPhoto)) {
+							if(!searchedPhotos.contains(p)) {
 								p.getconnectedAlbums().add("Searched");
 								searchedPhotos.add(p);
 							}else {
@@ -746,10 +689,8 @@ public class userController implements Serializable{
 		Alert deleteAlert = new Alert(AlertType.CONFIRMATION, "Move photo: " + photoSelected.getName() + " to album: " +destinationAlbum + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     	deleteAlert.showAndWait();
     	if(deleteAlert.getResult() == ButtonType.YES) {
-    		
     		System.out.println("Move Selected: " + destinationAlbum);		
     		user.addAlbumphoto(destinationAlbum, photoSelected);
-    		//user.getAlbum(user.findAlbum(sourceAlbum)).deletePhoto(photoSelected);
     		photoSelected.addAlbumname(destinationAlbum);
     		user.getAlbum(user.findAlbum(sourceAlbum)).getPhoto(index).deleteSelectedalbum(sourceAlbum);
     		user.getAlbum(user.findAlbum(sourceAlbum)).deletePhoto(photoSelected);
@@ -767,14 +708,12 @@ public class userController implements Serializable{
 	
 	@FXML
 	public void copyPhoto(ActionEvent event) {
-		//Not sure why thios place throws an excpetion, if copyBox.getSelectionModel().clearSelection(); is removed the exception is no longer thrown.
+		//Not sure why this place throws an excpetion, if copyBox.getSelectionModel().clearSelection(); is removed the exception is no longer thrown.
 		String selectedAlbum = copyBox.getSelectionModel().getSelectedItem().toString();
 		Alert deleteAlert = new Alert(AlertType.CONFIRMATION, "Copy photo: " + photoSelected.getName() + " to album: " +selectedAlbum + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     	deleteAlert.showAndWait();
     	if(deleteAlert.getResult() == ButtonType.YES) {
-    		//int index = copyBox.getSelectionModel().getSelectedIndex();
     		System.out.println("Copy Selected: " + selectedAlbum);
-    		//Need to add this instance of the album to al photos through the user's same photo
 			LinkedList<Album> userAlbums = user.getAlbums();
 			LinkedList<Photo> albumPhotos;
 
@@ -809,7 +748,6 @@ public class userController implements Serializable{
 	
 	@FXML
 	public void slideShow(ActionEvent evt) {
-	
 		FXMLLoader loader = new FXMLLoader();
  		loader.setLocation(getClass().getResource("/sample//view/slideShowPage.fxml"));	
 		AnchorPane root;
@@ -828,7 +766,6 @@ public class userController implements Serializable{
 			alert.setContentText("An album must have photos in order to view a slide show of it!");
 			alert.showAndWait();
 		}else {
-			
 			//Save everything the users has done up to this point
 			String dir = System.getProperty("user.dir");
 	        String PATH = dir+"/src/sample/users/";
@@ -844,12 +781,9 @@ public class userController implements Serializable{
 	            out.close(); 
 	            file.close();              
 	            System.out.println("Object has been serialized"); 
-	        } 
-	          
-	        catch(IOException ex) { 
+	        } catch(IOException ex) { 
 	            System.out.println("IOException is caught"); 
 	        }
-		
 			try {
 				Album album = user.getAlbum(user.findAlbum(selectedAlbum));
 				root = (AnchorPane)loader.load();
@@ -858,7 +792,7 @@ public class userController implements Serializable{
 		 		mainStage.setScene(new Scene(root, 1000, 750));
 		 		mainStage.setResizable(false);
 		 		mainStage.show();
-			} catch (IOException e) {
+			}catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -886,7 +820,6 @@ public class userController implements Serializable{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	private void updateListView() {
