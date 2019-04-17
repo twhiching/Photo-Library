@@ -6,12 +6,9 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -19,7 +16,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import sample.view.userController;
 
 public class loginController {
 	
@@ -35,12 +31,10 @@ public class loginController {
 		mainStage = stage;
 		
 	}
-	
-	
+
 	@FXML
 	public void changeScene(ActionEvent evt) throws IOException {
-		
-		//Parent adminView;
+
 		if(userName.getText() == null || userName.getText().equals("") ) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error Dialog");
@@ -49,20 +43,13 @@ public class loginController {
 			alert.showAndWait();
 		}else {
 			//If the user is an admin, load up the admin page, else load up the user page
-			if(userName.getText().equals("admin")) {
-				//adminView = FXMLLoader.load(getClass().getResource("/sample//view/adminPage.fxml"));
+			if(userName.getText().toLowerCase().equals("admin")) {
 				FXMLLoader loader = new FXMLLoader(
 						getClass().getResource(
 								"/sample//view/adminPage.fxml"
 						)
 				);
 				AnchorPane root = (AnchorPane)loader.load();
-				
-				/*Scene scene = new Scene(loader.load());
-				Stage window = (Stage) ((Node)evt.getSource()).getScene().getWindow();
-				window.setScene(scene);
-				window.show();*/
-				
 				adminController Controller = loader.getController();
 				Controller.start(mainStage);
 				mainStage.setScene(new Scene(root, 300, 200));
@@ -82,48 +69,29 @@ public class loginController {
 				//Really messy but converts all directories in arraylist to lowercase so it's not case sensative
 				ArrayList<String> userList = (ArrayList<String>) new ArrayList<String>(Arrays.asList(directories)).stream().map(String::toLowerCase)
                         																		.collect(Collectors.toList());;
-				if(userList.contains(userName.getText())) {
-					//adminView = FXMLLoader.load(getClass().getResource("/sample//view/userPage.fxml"));
-
-					/*FXMLLoader loader = new FXMLLoader(
-							getClass().getResource(
-									"/sample//view/userPage.fxml"
-							)
-					);*/
-					
+				if(userList.contains(userName.getText().toLowerCase())) {
 					FXMLLoader loader = new FXMLLoader();
 		     		loader.setLocation(getClass().getResource("/sample//view/userPage.fxml"));
 					AnchorPane root = (AnchorPane)loader.load();
 					System.out.println("Logging in as " + userName.getText());
 					
 					userController Controller = loader.getController();
-					//Controller.setUserName(userName.getText());
-					Controller.start(mainStage,userName.getText());
+					Controller.start(mainStage,userName.getText().toLowerCase());
 					if(root == null) {
 						System.out.println("Im null!");
 					}
 					mainStage.setScene(new Scene(root, 1000, 500));
 					mainStage.setResizable(false);
 					mainStage.show();
-					/*Scene scene = new Scene(loader.load());
-					Stage window = (Stage) ((Node)evt.getSource()).getScene().getWindow();
-					window.setScene(scene);
-
-					userController controller =
-							loader.<userController>getController();
-					controller.initialize(userName.getText());
-					window.show();*/
 				}else {
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Error Dialog");
 					alert.setHeaderText("Invalid Username");
 					alert.setContentText(userName.getText() + " does not exist");
 					alert.showAndWait();
+					userName.setText("");
 				}
 			}
 		}
 	}
-	
-	
-	
 }

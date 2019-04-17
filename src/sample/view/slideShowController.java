@@ -80,8 +80,7 @@ public class slideShowController {
 		try {
 			root = (AnchorPane)loader.load();
 			userController Controller = loader.getController();
-			Controller.resumeState(mainStage,userName,album,index); 
-	 		//Controller.start(mainStage,userName); 
+			Controller.resumeState(mainStage,userName,album,index);
 	 		mainStage.setScene(new Scene(root, 1000, 500));
 	 		mainStage.setResizable(false);
 	 		mainStage.show();

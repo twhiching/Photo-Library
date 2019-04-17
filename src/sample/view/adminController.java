@@ -2,15 +2,11 @@ package sample.view;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Optional;
-
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -21,7 +17,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.collections.FXCollections;
-import sample.Photo;
 import sample.users.Default;
 
 public class adminController implements Serializable {
@@ -54,48 +49,38 @@ public class adminController implements Serializable {
 				//Fill the observable list with the user names gathered from the file
 				obsListAdmin =  FXCollections.observableArrayList(listOfUsers);
 				listView.setItems(obsListAdmin);
-		
 	}
 	
 	@FXML
 	public void logout(ActionEvent evt) throws IOException {
-		
-		//TODO add a pop up to confirm user choice of logging out
-		/*Parent loginView = FXMLLoader.load(getClass().getResource("/sample//view/loginPage.fxml"));
-		Scene scene = new Scene(loginView);
-		Stage window = (Stage) ((Node)evt.getSource()).getScene().getWindow();
-		window.setScene(scene);
-		window.show();	*/
-		FXMLLoader loader = new FXMLLoader();
- 		loader.setLocation(getClass().getResource("/sample//view/loginPage.fxml"));	
-		AnchorPane root = (AnchorPane)loader.load();
- 		
- 		loginController Controller = loader.getController();
- 		Controller.start(mainStage); 
- 
- 		mainStage.setScene(new Scene(root, 250, 125));
- 		mainStage.setResizable(false);
- 		mainStage.show();
+
+		Alert alert = new Alert(AlertType.CONFIRMATION, "Confirm logout ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+		alert.showAndWait();
+		if (alert.getResult() == ButtonType.YES) {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("/sample//view/loginPage.fxml"));
+			AnchorPane root = (AnchorPane)loader.load();
+			loginController Controller = loader.getController();
+			Controller.start(mainStage);
+			mainStage.setScene(new Scene(root, 250, 125));
+			mainStage.setResizable(false);
+			mainStage.show();
+		}
 	}
 
 	@FXML
 	public void addUser(ActionEvent evt) throws IOException {
 
-		//TODO add check to make sure that user is unique
 		//Pop up dialog to get user name for the user object
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("Add new user");
 		dialog.setHeaderText("Enter user name:");
 		dialog.setContentText("Name:");
-		Optional<String> result = dialog.showAndWait();	
-
+		Optional<String> result = dialog.showAndWait();
 		//Create the path for which the users folder will reside
         String dir = System.getProperty("user.dir");
         String PATH = dir+"/src/sample/users/";
 		String directoryName = PATH.concat(result.get().toLowerCase());
-
-		//TODO check to see if user name that admin inputed is unique!
-		//TODO change the input of the user to lower case and make sure it is saved in the system as a lower case
 		File directory = new File(directoryName);
 		// check if user have write permissions
         if(!directory.canWrite()) {
@@ -109,30 +94,6 @@ public class adminController implements Serializable {
             			directoryName = directoryName.concat("/"+result.get().toLowerCase()+".ser");
             			String filename = directoryName;
             			Default user = new Default(result.get());
-            			
-            			/* We don't need stock photos for new user
-            			//Add in the default photos for this account
-						String defaultPhotoPath = PATH.concat("/stockPhotos/bojack.jpg");
-						Photo defaultPhoto_1 = new Photo("bojack",defaultPhotoPath);
-						user.addPhoto(defaultPhoto_1);
-
-						defaultPhotoPath = PATH.concat("/stockPhotos/clippy.jpg");
-						Photo defaultPhoto_2 = new Photo("clippy",defaultPhotoPath);
-						user.addPhoto(defaultPhoto_2);
-
-						defaultPhotoPath = PATH.concat("/stockPhotos/discord.jpg");
-						Photo defaultPhoto_3 = new Photo("discord",defaultPhotoPath);
-						user.addPhoto(defaultPhoto_3);
-
-						defaultPhotoPath = PATH.concat("/stockPhotos/gitBlame.jpeg");
-						Photo defaultPhoto_4 = new Photo("gitBlame",defaultPhotoPath);
-						user.addPhoto(defaultPhoto_4);
-
-						defaultPhotoPath = PATH.concat("/stockPhotos/houseMD.jpg");
-						Photo defaultPhoto_5 = new Photo("houseMD",defaultPhotoPath);
-						user.addPhoto(defaultPhoto_5);
-						******************************/
-
             			//Saving of object in the .ser file
             			FileOutputStream file = new FileOutputStream(filename);
             			ObjectOutputStream out = new ObjectOutputStream(file);
@@ -151,10 +112,20 @@ public class adminController implements Serializable {
             		}
                 }else{
                     System.out.println("directory was not created");
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error Dialog");
+					alert.setHeaderText("Directory was not created");
+					alert.setContentText("An error occurred while creating the user directory, please try again");
+					alert.showAndWait();
                 }
             }
         }else{
             System.out.println("PERMISSION DENIED");
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error Dialog");
+			alert.setHeaderText("User already exists");
+			alert.setContentText("User already exists in the system, please enter a unique user name");
+			alert.showAndWait();
         }
 	}
 
@@ -259,6 +230,4 @@ public class adminController implements Serializable {
 		obsListAdmin =  FXCollections.observableArrayList(listOfUsers);		
 		listView.setItems(obsListAdmin);
 	}
-
-	
 }

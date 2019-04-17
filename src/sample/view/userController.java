@@ -5,7 +5,6 @@ import java.text.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.*;
@@ -22,6 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.Album;
 import sample.Photo;
 import sample.users.Default;
@@ -34,6 +34,7 @@ public class userController implements Serializable{
 	private Default user;
 	private boolean isPhotoShown = false;
 	private Photo photoSelected;
+	EventHandler<WindowEvent> eventHandler;
 	
 	@FXML         
 	private Button logout;
@@ -140,16 +141,19 @@ public class userController implements Serializable{
 	            loadAlbumPhotos();
 	        }
 	    });
-		//listView.getSelectionModel().selectedIndexProperty().addListener((obs, oldVal, newVal) ->loadAlbumPhotos());
 		moveBox.setItems(obsList);
 		copyBox.setItems(obsList);
-		mainStage.setOnHiding( event -> {
-			try {
-				logout(null);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} );
+		eventHandler = new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                try{
+                    logout(null);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        };
+		mainStage.addEventFilter(WindowEvent.WINDOW_HIDING,eventHandler);
 	}
 	
 	private void loadAlbumPhotos() {
@@ -231,35 +235,41 @@ public class userController implements Serializable{
 
 	@FXML
 	public void logout(ActionEvent evt) throws IOException {
-		//Serialized the user object before logging out
-		//Create the path for where the users photos are stored
-        String dir = System.getProperty("user.dir");
-        String PATH = dir+"/src/sample/users/";
-		String directoryName = PATH.concat(userName+"/"+userName+".ser");
-		System.out.println("Path to .ser file is:"+directoryName);
-		try{    
-            //Saving of object in a file 
-            FileOutputStream file = new FileOutputStream(directoryName); 
-            ObjectOutputStream out = new ObjectOutputStream(file); 
-              
-            // Method for serialization of object 
-            out.writeObject(user);        
-            out.close(); 
-            file.close();              
-            System.out.println("Object has been serialized"); 
-        } 
-          
-        catch(IOException e) { 
-            e.printStackTrace(); 
+
+        Alert alert = new Alert(AlertType.CONFIRMATION, "Confirm logout ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+        alert.showAndWait();
+        if (alert.getResult() == ButtonType.YES) {
+            //Serialized the user object before logging out
+            //Create the path for where the users photos are stored
+            String dir = System.getProperty("user.dir");
+            String PATH = dir+"/src/sample/users/";
+            String directoryName = PATH.concat(userName+"/"+userName+".ser");
+            System.out.println("Path to .ser file is:"+directoryName);
+            try{
+                //Saving of object in a file
+                FileOutputStream file = new FileOutputStream(directoryName);
+                ObjectOutputStream out = new ObjectOutputStream(file);
+
+                // Method for serialization of object
+                out.writeObject(user);
+                out.close();
+                file.close();
+                System.out.println("Object has been serialized");
+            }
+
+            catch(IOException e) {
+                e.printStackTrace();
+            }
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/sample//view/loginPage.fxml"));
+            AnchorPane root = (AnchorPane)loader.load();
+            loginController Controller = loader.getController();
+            mainStage.removeEventFilter(WindowEvent.WINDOW_HIDING,eventHandler);
+            Controller.start(mainStage);
+            mainStage.setScene(new Scene(root, 250, 125));
+            mainStage.setResizable(false);
+            mainStage.show();
         }
-		FXMLLoader loader = new FXMLLoader();
- 		loader.setLocation(getClass().getResource("/sample//view/loginPage.fxml"));	
-		AnchorPane root = (AnchorPane)loader.load();
- 		loginController Controller = loader.getController();
- 		Controller.start(mainStage); 
- 		mainStage.setScene(new Scene(root, 250, 125));
- 		mainStage.setResizable(false);
- 		mainStage.show();
 	}
 	@FXML
 	public void addAlbum(ActionEvent evt) throws IOException{
@@ -344,51 +354,44 @@ public class userController implements Serializable{
 			Alert alert = new Alert(AlertType.CONFIRMATION, "Edit " + Photos.get(index).getName() + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
 			alert.showAndWait();
 			if (alert.getResult() == ButtonType.YES) {
-				if(!(photoName.getText().equals(nameArea.getText()))){
-					photoName.setText((nameArea.getText()));
-				}
-				//Search through all albums for that photo and make the change if photo matches
-				Photo photo = user.getAlbum(user.findAlbum(album)).getPhoto(index);
-				ArrayList<String> albumsConnectedToPhoto = photo.getconnectedAlbums();
-				for(String i:albumsConnectedToPhoto) {
-					System.out.println(i);
-				}
-				//Go through all albums asscoiated with that photo
-				//for(int i = 0; i < albumsConnectedToPhoto.size();++i) {
-				for(String albumName : albumsConnectedToPhoto) {
-					LinkedList<Photo> albumPhotos = user.getAlbum(user.findAlbum(albumName)).getAlbumPhotos();
-					//Go through all photos in that album				
-					for(Photo p : albumPhotos) {
-						//Check to see if photo paths match before making the changes!
-						//System.out.println("Gonna compare this: "+ p.getPhotoPath());
-						//System.out.println("With this: "+photoSelected.getPhotoPath());
-						if(p.getPhotoPath().equals(photoSelected.getPhotoPath())) {
-							p.setName(nameArea.getText());
-							p.setCaption(captionArea.getText());
-							//System.out.println(tag1Area.getText() + "|" + tag2Area.getText());
-							//System.out.println("Two tags are: " + tag1Area.getText().contentEquals(tag2Area.getText()));
-							if(p.getTagone() == null && p.getTagtwo() == null) {
+				if(((tag1Area.getText() == null) && (tag2Area.getText() == null)) || ((tag1Area.getText().equals("")) && (tag2Area.getText().equals(""))) || !(tag1Area.getText().equals(tag2Area.getText()))) {
+
+					if(!(photoName.getText().equals(nameArea.getText()))){
+						photoName.setText((nameArea.getText()));
+					}
+					//Search through all albums for that photo and make the change if photo matches
+					Photo photo = user.getAlbum(user.findAlbum(album)).getPhoto(index);
+					ArrayList<String> albumsConnectedToPhoto = photo.getconnectedAlbums();
+					for(String i:albumsConnectedToPhoto) {
+						System.out.println(i);
+					}
+					//Go through all albums associated with that photo
+					for(String albumName : albumsConnectedToPhoto) {
+						LinkedList<Photo> albumPhotos = user.getAlbum(user.findAlbum(albumName)).getAlbumPhotos();
+						//Go through all photos in that album
+						for(Photo p : albumPhotos) {
+							//Check to see if photo paths match before making the changes!
+							//System.out.println("Gonna compare this: "+ p.getPhotoPath());
+							//System.out.println("With this: "+photoSelected.getPhotoPath());
+							if(p.getPhotoPath().equals(photoSelected.getPhotoPath())) {
+								p.setName(nameArea.getText());
+								p.setCaption(captionArea.getText());
 								p.setTagone(tag1Area.getText());
 								p.setTagtwo(tag2Area.getText());
-							//When deleting a tags values
-							}else if(p.getTagone() != null && tag1Area.getText().length() == 0) {
-								p.setTagone(null);
-							}else if(p.getTagtwo() != null && tag2Area.getText().length() == 0){
-								p.setTagtwo(null);
-							//Check if tag names are the same
-							}else if( !(tag1Area.getText().contentEquals(tag2Area.getText())) ){
-								p.setTagone(tag1Area.getText());
-								p.setTagtwo(tag2Area.getText());
-							}else {
-								Alert editError = new Alert(AlertType.ERROR);
-								editError.setTitle("Error Dialog");
-								editError.setHeaderText("Duplicate tags");
-								editError.setContentText("Please use unique values when editing a photo");
-								editError.showAndWait();
 							}
 						}
-					}								
-				}										
+					}
+				}else {
+					nameArea.setText(photoSelected.getName());
+					captionArea.setText(photoSelected.getCaption());
+					tag1Area.setText(photoSelected.getTagone());
+					tag2Area.setText(photoSelected.getTagtwo());
+					Alert editError = new Alert(AlertType.ERROR);
+					editError.setTitle("Error Dialog");
+					editError.setHeaderText("Duplicate variables in edit");
+					editError.setContentText("Please use unique values for tags when editing a photo");
+					editError.showAndWait();
+				}
 			}			
 		}else if(isPhotoShown == false && album != null) {//This means the user wants to edit an album's name
 			//Pop up dialog to get user name for the user object
@@ -845,6 +848,7 @@ public class userController implements Serializable{
 		start(stage,userName);
 		Photo photo = album.getPhoto(photoIndex);
 		listView.getSelectionModel().select(album.getName());
+		loadUserPhotos(album.getAlbumPhotos());
 		try {
 			FileInputStream input = new FileInputStream(photo.getPhotoPath());
 			//Keep a global copy of the photo on hand for your move and copy functions
