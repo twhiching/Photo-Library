@@ -320,7 +320,7 @@ public class userController implements Serializable{
 				System.out.println("Raw: " + photoNameraw);
 				System.out.println("Full Path: " +photoPath);
 				Photo userPhoto = new Photo(photoNamecleaned, photoPath,selectedAlbum);
-				if( !user.findDuplicatephoto(photoPath, selectedAlbum)) {
+				if( user.findDuplicatephoto(photoPath, selectedAlbum)) {
 					user.addAlbumphoto(selectedAlbum, userPhoto);
 					LinkedList<Photo> Photos = user.getAlbum(user.findAlbum(selectedAlbum)).getAlbumPhotos();
 					loadUserPhotos(Photos);

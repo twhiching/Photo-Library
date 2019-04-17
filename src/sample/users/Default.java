@@ -128,8 +128,12 @@ public class Default implements Serializable {
     }
     public boolean findDuplicatephoto(String targetPath, String targetAlbum) {
     	for(Photo p : albumList.get(findAlbum(targetAlbum)).getAlbumPhotos()) {
-    		if(p.getPhotoPath() == targetPath)
+    		System.out.println("Album " + albumList.get(findAlbum(targetAlbum)).getName());
+    		System.out.println("Photo path: " + p.getPhotoPath() + "|Selected Path: " + targetPath);
+    		if(p.getPhotoPath().contentEquals(targetPath))
     			return false;
+    		else
+    			continue;
     	}
     	return true;
     }
