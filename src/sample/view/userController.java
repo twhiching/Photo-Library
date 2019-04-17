@@ -347,19 +347,30 @@ public class userController implements Serializable{
 					System.out.println(i);
 				}
 				//Go through all albums asscoiated with that photo
-				for(int i = 0; i < albumsConnectedToPhoto.size();++i) {
-					
-					LinkedList<Photo> albumPhotos = user.getAlbum(user.findAlbum(albumsConnectedToPhoto.get(i))).getAlbumPhotos();
+				//for(int i = 0; i < albumsConnectedToPhoto.size();++i) {
+				for(String albumName : albumsConnectedToPhoto) {
+					LinkedList<Photo> albumPhotos = user.getAlbum(user.findAlbum(albumName)).getAlbumPhotos();
 					//Go through all photos in that album				
-					for(int j = 0; j <albumPhotos.size(); ++j) {	
+					for(Photo p : albumPhotos) {
 						//Check to see if photo paths match before making the changes!
-						System.out.println("Gonna compare this: "+albumPhotos.get(j).getPhotoPath());
-						System.out.println("With this: "+photoSelected.getPhotoPath());
-						if(albumPhotos.get(j).getPhotoPath().equals(photoSelected.getPhotoPath())) {
-							user.getAlbum(user.findAlbum(albumsConnectedToPhoto.get(i))).getPhoto(j).setName(nameArea.getText());
-							user.getAlbum(user.findAlbum(albumsConnectedToPhoto.get(i))).getPhoto(j).setCaption(captionArea.getText());
-							user.getAlbum(user.findAlbum(albumsConnectedToPhoto.get(i))).getPhoto(j).setTagone(tag1Area.getText());
-							user.getAlbum(user.findAlbum(albumsConnectedToPhoto.get(i))).getPhoto(j).setTagtwo(tag2Area.getText());
+						//System.out.println("Gonna compare this: "+ p.getPhotoPath());
+						//System.out.println("With this: "+photoSelected.getPhotoPath());
+						if( (p.getTagone() == null && p.getTagtwo() == null) 
+							|| (p.getTagone() != null && tag1Area.getText() != p.getTagone()) || (p.getTagone() != null && tag2Area.getText() != p.getTagone())
+							|| (p.getTagtwo() != null && tag1Area.getText() != p.getTagtwo()) || (p.getTagtwo() != null && tag2Area.getText() != p.getTagtwo())
+							|| (tag1Area.getText() != tag2Area.getText())) {
+							if(p.getPhotoPath().equals(photoSelected.getPhotoPath())) {
+								p.setName(nameArea.getText());
+								p.setCaption(captionArea.getText());
+								p.setTagone(tag1Area.getText());
+								p.setTagtwo(tag2Area.getText());
+							}
+						}else {
+							Alert editError = new Alert(AlertType.ERROR);
+							editError.setTitle("Error Dialog");
+							editError.setHeaderText("Duplicate variables in edit");
+							editError.setContentText("Please use unique values when editing a photo");
+							editError.showAndWait();
 						}
 					}								
 				}										
@@ -662,7 +673,6 @@ public class userController implements Serializable{
 						}
 					}else if(p.getTagone() == null && p.getTagtwo() != null) {
 						if(p.getTagone().equals(toSearch)) {
-							//Check for duplicate
 							if(!searchedPhotos.contains(p)) {
 								p.getconnectedAlbums().add("Searched");
 								searchedPhotos.add(p);
@@ -670,10 +680,8 @@ public class userController implements Serializable{
 								System.out.println("Invalid attempt to add a photo");
 							}
 						}
-					//Tag two is null
 					}else if(p.getTagone() != null && p.getTagtwo() == null) {
 						if(p.getTagone().equals(toSearch)) {
-							//Check for duplicate
 							if(!searchedPhotos.contains(p)) {
 								p.getconnectedAlbums().add("Searched");
 								searchedPhotos.add(p);
