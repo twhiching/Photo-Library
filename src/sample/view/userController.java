@@ -132,7 +132,15 @@ public class userController implements Serializable{
 	       }
 		obsList =  FXCollections.observableArrayList(user.listAlbumnames());	
 		listView.setItems(obsList);
-		listView.getSelectionModel().selectedIndexProperty().addListener((obs, oldVal, newVal) ->loadAlbumPhotos());
+		listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+	        @Override
+	        public void handle(MouseEvent event) {
+	            System.out.println("clicked on " + listView.getSelectionModel().getSelectedItem());
+	            loadAlbumPhotos();
+	        }
+	    });
+		//listView.getSelectionModel().selectedIndexProperty().addListener((obs, oldVal, newVal) ->loadAlbumPhotos());
 		moveBox.setItems(obsList);
 		copyBox.setItems(obsList);
 		mainStage.setOnHiding( event -> {
@@ -355,8 +363,8 @@ public class userController implements Serializable{
 						}
 					}								
 				}										
-			}
-			//This means the user wants to edit an album's name
+			}			
+		}else if(isPhotoShown == false && album != null) {//This means the user wants to edit an album's name
 			//Pop up dialog to get user name for the user object
 			TextInputDialog dialog = new TextInputDialog();
 			dialog.setTitle("Edit Album's Name");
@@ -364,14 +372,23 @@ public class userController implements Serializable{
 			dialog.setContentText("Album:");
 			Optional<String> result = dialog.showAndWait();
 			try {
+				//Must change all associations inside that album that is to be renamed to new name
+				Album tempAlbum = user.getAlbum(user.findAlbum(album));
+				LinkedList<Photo> albumPhotos = tempAlbum.getAlbumPhotos();
+				for(Photo p:albumPhotos) {
+					p.deleteSelectedalbum(album);
+					p.addAlbumname(result.get());
+				}
+				int listIndex = listView.getSelectionModel().getSelectedIndex();
+				System.out.println("List index is: " + listIndex);
 				user.getAlbum(user.findAlbum(album)).setName(result.get());
+				thumbnailViewText.setText(result.get()+" photo's");
 				updateListView();
+				listView.getSelectionModel().select(listIndex);
 			}catch(NoSuchElementException e) {
 				
 			}
-						
-		}
-		else { //Nothing is selected so it is an invalid operation
+		}else { //Nothing is selected so it is an invalid operation
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error Dialog");
 			alert.setHeaderText("Must select an item in order to edit");
@@ -675,7 +692,9 @@ public class userController implements Serializable{
 			alert.setContentText("Please enter a valid search term");
 			alert.showAndWait();
 		}
-		listView.getSelectionModel().clearSelection();
+		listView.getSelectionModel().select("Searched");
+		user.getAlbum(user.findAlbum("Searched")).setAlbumPhotos(searchedPhotos);
+		//listView.getSelectionModel().clearSelection();
 		searchBox.setText("");
 		loadUserPhotos(searchedPhotos);
 		updateListView();

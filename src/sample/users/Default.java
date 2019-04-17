@@ -6,6 +6,8 @@ import sample.Photo;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 @SuppressWarnings("serial")
@@ -83,6 +85,15 @@ public class Default implements Serializable {
    	 		
    	 	}
    	 	//TODO sort photos by dates, earliest to latest
+   	 	Album tempAlbum = albumList.get(albumIndex);
+   	 	LinkedList<Photo> albumPhotos = tempAlbum.getAlbumPhotos();
+   	 	
+   	 	Collections.sort(albumPhotos, new Comparator<Photo>() {
+   	 		public int compare(Photo o1, Photo o2) {
+   	 			return o1.getDateTime().compareTo(o2.getDateTime());
+   	 		}
+   	 	});
+   	 	albumList.get(albumIndex).setAlbumPhotos(albumPhotos);
     }
 
     //Methods to delete an album or photo from the user lists

@@ -14,6 +14,10 @@ public class Album implements Serializable{
 		return photos;
 	}
 	
+	public void setAlbumPhotos(LinkedList<Photo> photos) {
+		this.photos = photos; 
+	}
+	
 	public void deletePhoto(Photo photo) {
 		photos.remove(photo);
 	}

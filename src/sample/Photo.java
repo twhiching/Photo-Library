@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Photo implements Serializable{
@@ -164,4 +165,15 @@ public class Photo implements Serializable{
     	
     	return tempAlbum;
     }
+	
+	public Date getDateTime() {
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("MM/dd/yyyy").parse(getDate());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		return date;
+	}
 }
