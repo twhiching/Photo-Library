@@ -5,6 +5,10 @@ import sample.Photo;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,10 +83,17 @@ public class Default implements Serializable {
     //Targeted function to add photo given the name of the album
     public void addAlbumphoto(String albumName, Photo selectedPhoto) {
    	 	int albumIndex = findAlbum(albumName);
-   	 	if(albumIndex != -1) {   	 	   
-   	 		albumList.get(albumIndex).addPhoto(selectedPhoto); 	 	
+   	 	if(albumIndex != -1) {
+   	 		if(!albumList.get(albumIndex).getAlbumPhotos().contains(selectedPhoto))
+   	 			albumList.get(albumIndex).addPhoto(selectedPhoto); 	 	
+   	 		else {
+	   	 		Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error Dialog");
+				alert.setHeaderText("Duplicate Photo");
+				alert.setContentText("Photo already exists in album");
+				alert.showAndWait();
+   	 		}
    	 		//Then sort the photos in the album by most recent date
-   	 		
    	 	}
    	 	//TODO sort photos by dates, earliest to latest
    	 	Album tempAlbum = albumList.get(albumIndex);
@@ -115,5 +126,11 @@ public class Default implements Serializable {
     	}
     	return true;
     }
-    
+    public boolean findDuplicatephoto(String targetPath, String targetAlbum) {
+    	for(Photo p : albumList.get(findAlbum(targetAlbum)).getAlbumPhotos()) {
+    		if(p.getPhotoPath() == targetPath)
+    			return false;
+    	}
+    	return true;
+    }
 }

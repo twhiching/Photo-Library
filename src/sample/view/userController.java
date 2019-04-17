@@ -319,11 +319,18 @@ public class userController implements Serializable{
 				System.out.println("Cleaned: " + photoNamecleaned);
 				System.out.println("Raw: " + photoNameraw);
 				System.out.println("Full Path: " +photoPath);
-		        System.out.println("Adding new photo");
 				Photo userPhoto = new Photo(photoNamecleaned, photoPath,selectedAlbum);
-				user.addAlbumphoto(selectedAlbum, userPhoto);
-				LinkedList<Photo> Photos = user.getAlbum(user.findAlbum(selectedAlbum)).getAlbumPhotos();
-				loadUserPhotos(Photos);
+				if( !user.findDuplicatephoto(photoPath, selectedAlbum)) {
+					user.addAlbumphoto(selectedAlbum, userPhoto);
+					LinkedList<Photo> Photos = user.getAlbum(user.findAlbum(selectedAlbum)).getAlbumPhotos();
+					loadUserPhotos(Photos);
+				}else {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error Dialog");
+					alert.setHeaderText("Duplicate Photo");
+					alert.setContentText("Please a unique photo");
+					alert.showAndWait();
+				}
 			}
 		}
 	}
@@ -762,7 +769,7 @@ public class userController implements Serializable{
 					System.out.println("Item is: "+ listView.getSelectionModel().getSelectedItem());
 				}
 				for(int j = 0; j < albumPhotos.size();++j){
-					System.out.println("ALbum comparing is: "+ userAlbums.get(i).getName());
+					System.out.println("Album comparing is: "+ userAlbums.get(i).getName());
 					if(albumPhotos.get(j).getPhotoPath().equals(photoSelected.getPhotoPath())){
 						System.out.println("This is the comparing photo: " + albumPhotos.get(j).getPhotoPath());
 						System.out.println("This is the selected photo: " + photoSelected.getPhotoPath());
@@ -770,7 +777,6 @@ public class userController implements Serializable{
 					}
 				}
 			}
-
     		System.out.println("Using Photo class successfully copied over");
     		System.out.println("In the user class adding album photo");
     		try {
