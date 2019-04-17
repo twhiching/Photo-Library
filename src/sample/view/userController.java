@@ -355,22 +355,30 @@ public class userController implements Serializable{
 						//Check to see if photo paths match before making the changes!
 						//System.out.println("Gonna compare this: "+ p.getPhotoPath());
 						//System.out.println("With this: "+photoSelected.getPhotoPath());
-						if( (p.getTagone() == null && p.getTagtwo() == null) 
-							|| (p.getTagone() != null && tag1Area.getText() != p.getTagone()) || (p.getTagone() != null && tag2Area.getText() != p.getTagone())
-							|| (p.getTagtwo() != null && tag1Area.getText() != p.getTagtwo()) || (p.getTagtwo() != null && tag2Area.getText() != p.getTagtwo())
-							|| (tag1Area.getText() != tag2Area.getText())) {
-							if(p.getPhotoPath().equals(photoSelected.getPhotoPath())) {
-								p.setName(nameArea.getText());
-								p.setCaption(captionArea.getText());
+						if(p.getPhotoPath().equals(photoSelected.getPhotoPath())) {
+							p.setName(nameArea.getText());
+							p.setCaption(captionArea.getText());
+							//System.out.println(tag1Area.getText() + "|" + tag2Area.getText());
+							//System.out.println("Two tags are: " + tag1Area.getText().contentEquals(tag2Area.getText()));
+							if(p.getTagone() == null && p.getTagtwo() == null) {
 								p.setTagone(tag1Area.getText());
 								p.setTagtwo(tag2Area.getText());
+							//When deleting a tags values
+							}else if(p.getTagone() != null && tag1Area.getText().length() == 0) {
+								p.setTagone(null);
+							}else if(p.getTagtwo() != null && tag2Area.getText().length() == 0){
+								p.setTagtwo(null);
+							//Check if tag names are the same
+							}else if( !(tag1Area.getText().contentEquals(tag2Area.getText())) ){
+								p.setTagone(tag1Area.getText());
+								p.setTagtwo(tag2Area.getText());
+							}else {
+								Alert editError = new Alert(AlertType.ERROR);
+								editError.setTitle("Error Dialog");
+								editError.setHeaderText("Duplicate tags");
+								editError.setContentText("Please use unique values when editing a photo");
+								editError.showAndWait();
 							}
-						}else {
-							Alert editError = new Alert(AlertType.ERROR);
-							editError.setTitle("Error Dialog");
-							editError.setHeaderText("Duplicate variables in edit");
-							editError.setContentText("Please use unique values when editing a photo");
-							editError.showAndWait();
 						}
 					}								
 				}										
