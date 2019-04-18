@@ -92,10 +92,9 @@ public class Default implements Serializable {
 				alert.setHeaderText("Duplicate Photo");
 				alert.setContentText("Photo already exists in album");
 				alert.showAndWait();
-   	 		}
-   	 		//Then sort the photos in the album by most recent date
+   	 		}  	 		
    	 	}
-   	 	//TODO sort photos by dates, earliest to latest
+   	 	//Then sort the photos in the album by most recent date
    	 	Album tempAlbum = albumList.get(albumIndex);
    	 	LinkedList<Photo> albumPhotos = tempAlbum.getAlbumPhotos();
    	 	

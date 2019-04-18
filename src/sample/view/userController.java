@@ -145,15 +145,11 @@ public class userController implements Serializable{
 		copyBox.setItems(obsList);
 		eventHandler = new EventHandler<WindowEvent>() {
             @Override
-            public void handle(WindowEvent event) {
-                try{
-                    logout(null);
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
+            public void handle(WindowEvent event) {            	                          	                
+				forcedQuit(event);
             }
-        };
-		mainStage.addEventFilter(WindowEvent.WINDOW_HIDING,eventHandler);
+        };           
+		mainStage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,eventHandler);		
 	}
 	
 	private void loadAlbumPhotos() {
@@ -264,11 +260,41 @@ public class userController implements Serializable{
             loader.setLocation(getClass().getResource("/sample//view/loginPage.fxml"));
             AnchorPane root = (AnchorPane)loader.load();
             loginController Controller = loader.getController();
-            mainStage.removeEventFilter(WindowEvent.WINDOW_HIDING,eventHandler);
+            mainStage.removeEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,eventHandler);
             Controller.start(mainStage);
             mainStage.setScene(new Scene(root, 250, 125));
             mainStage.setResizable(false);
             mainStage.show();
+        }
+	}
+	
+	public void forcedQuit(WindowEvent event) {
+        Alert alert = new Alert(AlertType.CONFIRMATION, "Confirm closing down the program?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+        alert.showAndWait();
+        if (alert.getResult() == ButtonType.YES) {
+            //Serialized the user object before logging out
+            //Create the path for where the users photos are stored
+            String dir = System.getProperty("user.dir");
+            String PATH = dir+"/src/sample/users/";
+            String directoryName = PATH.concat(userName+"/"+userName+".ser");
+            System.out.println("Path to .ser file is:"+directoryName);
+            try{
+                //Saving of object in a file
+                FileOutputStream file = new FileOutputStream(directoryName);
+                ObjectOutputStream out = new ObjectOutputStream(file);
+                // Method for serialization of object
+                out.writeObject(user);
+                out.close();
+                file.close();
+                System.out.println("Object has been serialized");
+            }
+            catch(IOException e) {
+                e.printStackTrace();
+            }          
+        }else if(alert.getResult() == ButtonType.NO) {
+        	event.consume();
+        }else if(alert.getResult() == ButtonType.CANCEL) {
+        	event.consume();
         }
 	}
 	@FXML
@@ -734,21 +760,31 @@ public class userController implements Serializable{
 		Alert deleteAlert = new Alert(AlertType.CONFIRMATION, "Move photo: " + photoSelected.getName() + " to album: " +destinationAlbum + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     	deleteAlert.showAndWait();
     	if(deleteAlert.getResult() == ButtonType.YES) {
-    		System.out.println("Move Selected: " + destinationAlbum);		
-    		user.addAlbumphoto(destinationAlbum, photoSelected);
-    		photoSelected.addAlbumname(destinationAlbum);
-    		user.getAlbum(user.findAlbum(sourceAlbum)).getPhoto(index).deleteSelectedalbum(sourceAlbum);
-    		user.getAlbum(user.findAlbum(sourceAlbum)).deletePhoto(photoSelected);
-    		selectedPhoto.setImage(null);
-    		photoName.setText(null);
-    		LinkedList<Photo> updatedPhotos = user.getAlbum(user.findAlbum(sourceAlbum)).getAlbumPhotos();
-    		loadUserPhotos(updatedPhotos);
-    		try {
-    			moveBox.getSelectionModel().clearSelection();
-    		}catch(Exception e) {
-    			System.out.println(e);
+    		
+    		System.out.println(user.findDuplicatephoto(photoSelected.getPhotoPath(), destinationAlbum));
+    		if(user.findDuplicatephoto(photoSelected.getPhotoPath(), destinationAlbum)) {
+    			System.out.println("Move Selected: " + destinationAlbum);		
+        		user.addAlbumphoto(destinationAlbum, photoSelected);
+        		photoSelected.addAlbumname(destinationAlbum);
+        		user.getAlbum(user.findAlbum(sourceAlbum)).getPhoto(index).deleteSelectedalbum(sourceAlbum);
+        		user.getAlbum(user.findAlbum(sourceAlbum)).deletePhoto(photoSelected);
+        		selectedPhoto.setImage(null);
+        		photoName.setText(null);
+        		LinkedList<Photo> updatedPhotos = user.getAlbum(user.findAlbum(sourceAlbum)).getAlbumPhotos();
+        		loadUserPhotos(updatedPhotos);
+    		}else {
+    			Alert alert = new Alert(AlertType.ERROR);
+    			alert.setTitle("Error Dialog");
+    			alert.setHeaderText("Photo already exists");
+    			alert.setContentText(photoSelected.getName() + " already exsits in " + destinationAlbum);
+    			alert.showAndWait();
     		}
-    	}		
+    	}
+    	try {
+			moveBox.getSelectionModel().clearSelection();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
 	}
 	
 	@FXML
@@ -792,6 +828,7 @@ public class userController implements Serializable{
 	
 	@FXML
 	public void slideShow(ActionEvent evt) {
+		mainStage.removeEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,eventHandler);
 		FXMLLoader loader = new FXMLLoader();
  		loader.setLocation(getClass().getResource("/sample//view/slideShowPage.fxml"));	
 		AnchorPane root;
@@ -845,7 +882,7 @@ public class userController implements Serializable{
 	
 	//Resume state once user comes back from slide show view
 	public void resumeState(Stage stage,String userName,Album album,int photoIndex) {
-		start(stage,userName);
+		start(stage,userName);		
 		Photo photo = album.getPhoto(photoIndex);
 		listView.getSelectionModel().select(album.getName());
 		loadUserPhotos(album.getAlbumPhotos());

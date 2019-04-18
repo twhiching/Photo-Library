@@ -2,18 +2,25 @@ package sample.view;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.Album;
 import sample.Photo;
 
@@ -23,6 +30,7 @@ public class slideShowController {
 	String userName;
 	int index;
 	Album album;
+	EventHandler<WindowEvent> eventHandler;
 	
 	@FXML         
 	private Button back;
@@ -45,11 +53,27 @@ public class slideShowController {
 		userName = user;
 		this.index = index;
 		this.album = album;
-		//System.out.println("User is: " + user);
-		//System.out.println("Album is: " + album.getName());
-		//System.out.println("Album size is: "+ album.getAlbumPhotos().size());
-		//System.out.println("index of photo is: " + index);
+		eventHandler = new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {            	                          	                
+				exit(event);
+            }
+        }; 
+        mainStage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,eventHandler);
 		loadImage(index);
+		
+	}
+	
+	public void exit(WindowEvent event) {
+		 Alert alert = new Alert(AlertType.CONFIRMATION, "Confirm closing down the program?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+	        alert.showAndWait();
+	        if (alert.getResult() == ButtonType.YES) {	       
+	            cancel(null);
+	        }else if(alert.getResult() == ButtonType.NO) {
+	        	event.consume();
+	        }else if(alert.getResult() == ButtonType.CANCEL) {
+	        	event.consume();
+	        }
 	}
 	
 	@FXML
@@ -74,6 +98,7 @@ public class slideShowController {
 	
 	@FXML
 	public void cancel(ActionEvent evt) {
+		mainStage.removeEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,eventHandler);
 		FXMLLoader loader = new FXMLLoader();
  		loader.setLocation(getClass().getResource("/sample//view/userPage.fxml"));	
 		AnchorPane root;
