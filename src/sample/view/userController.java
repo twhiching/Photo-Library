@@ -149,7 +149,17 @@ public class userController implements Serializable{
 				forcedQuit(event);
             }
         };           
-		mainStage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,eventHandler);		
+		mainStage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,eventHandler);
+		searchBox.setPromptText("Enter your search here"); 
+		searchBox.getParent().requestFocus(); 
+		nameArea.setPromptText("Enter name here"); 
+		nameArea.getParent().requestFocus(); 
+		captionArea.setPromptText("Enter caption here"); 
+		captionArea.getParent().requestFocus(); 
+		tag1Area.setPromptText("Enter tag here"); 
+		tag1Area.getParent().requestFocus(); 
+		tag2Area.setPromptText("Enter tag here"); 
+		tag2Area.getParent().requestFocus(); 
 	}
 	
 	private void loadAlbumPhotos() {
